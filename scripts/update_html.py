@@ -158,7 +158,7 @@ def replace_stat_value(html, label_text, new_value, new_subtitle=None):
 def replace_badge(html, day_number):
     """Recipe Step 4: Update the day counter badge."""
     pattern = r'(<div class="badge">)[^<]*(</div>)'
-    replacement = r'\g<1>\u0414\u0435\u043d\u044c %d\2' % day_number
+    replacement = r'\g<1>' + 'День %d' % day_number + r'\2'
     result = re.sub(pattern, replacement, html)
     log.info("Updated badge: Day %d", day_number)
     return result
@@ -228,15 +228,14 @@ def update_deadline_banner(html):
         pattern = r'(<div class="dl-days">)\d+(</div>)'
         html = re.sub(pattern, r'\g<1>0\2', html)
         pattern2 = r'(<div class="dl-caption">)[^<]*(</div>)'
-        html = re.sub(pattern2, r'\g<1>\u0434\u0435\u0434\u043b\u0430\u0439\u043d \u043f\u0440\u043e\u0448\u0451\u043b\2', html)
+        html = re.sub(pattern2, r'\g<1>' + 'дедлайн прошёл' + r'\2', html)
     else:
         pattern = r'(<div class="dl-days">)\d+(</div>)'
         html = re.sub(pattern, r'\g<1>%d\2' % days_left, html)
         pattern2 = r'(<div class="dl-caption">)[^<]*(</div>)'
         html = re.sub(
             pattern2,
-            r'\g<1>\u0434\u043d\u0435\u0439 \u0434\u043e 6 \u0430\u043f\u0440\2' if days_left != 1
-            else r'\g<1>\u0434\u0435\u043d\u044c \u0434\u043e 6 \u0430\u043f\u0440\2',
+            r'\g<1>' + ('дней до 6 апр' if days_left != 1 else 'день до 6 апр') + r'\2',
             html
         )
 

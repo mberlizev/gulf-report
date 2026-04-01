@@ -115,7 +115,7 @@ html,body{background:var(--bg);color:var(--txt);font-family:-apple-system,'SF Pr
   <div class="hdr-row">
     <div>
       <div class="hdr-t"><span class="live"></span>ПВО ОАЭ · Иранские удары 2026</div>
-      <div class="hdr-s">МО ОАЭ · The National · Al Jazeera &nbsp;·&nbsp; 1 апреля 2026</div>
+      <div class="hdr-s">МО ОАЭ · The National · Al Jazeera &nbsp;·&nbsp; 1 апреля 2026 &nbsp;·&nbsp; <span id="upd-time"></span></div>
     </div>
     <div class="badge">День 33</div>
   </div>
@@ -131,7 +131,7 @@ html,body{background:var(--bg);color:var(--txt);font-family:-apple-system,'SF Pr
 <div class="panel on" id="p0">
 
   <div class="g4">
-    <div class="stat"><div class="sl">Запусков</div><div class="sv">2 582</div><div class="ss">33 дней</div></div>
+    <div class="stat"><div class="sl">Запусков</div><div class="sv">2 582</div><div class="ss">33 дня</div></div>
     <div class="stat"><div class="sl">Баллист.</div><div class="sv" style="color:var(--B)">454</div><div class="ss">+13 крыл.</div></div>
     <div class="stat"><div class="sl">Дронов</div><div class="sv" style="color:var(--G)">2 115</div><div class="ss">Shahed</div></div>
     <div class="stat"><div class="sl">Перехват</div><div class="sv" style="color:var(--G)">~97%</div><div class="ss">нараст.</div></div>
@@ -174,7 +174,7 @@ html,body{background:var(--bg);color:var(--txt);font-family:-apple-system,'SF Pr
 <div class="panel" id="p1">
 
   <div class="g2">
-    <div class="stat"><div class="sl">ОАЭ / млн</div><div class="sv" style="color:var(--G)">1,13</div><div class="ss">33 дней войны</div></div>
+    <div class="stat"><div class="sl">ОАЭ / млн</div><div class="sv" style="color:var(--G)">1,13</div><div class="ss">33 дня войны</div></div>
     <div class="stat"><div class="sl">Москва / млн</div><div class="sv" style="color:var(--G)">&lt;0,8</div><div class="ss">2 года атак</div></div>
     <div class="stat"><div class="sl">Украина 2025</div><div class="sv" style="color:var(--R)">66</div><div class="ss">/ млн / год</div></div>
     <div class="stat"><div class="sl">Запуск / гиб.</div><div class="sv" style="color:var(--G)">235</div><div class="ss">исторический рекорд</div></div>
@@ -272,6 +272,14 @@ if(window.Telegram&&window.Telegram.WebApp){
   Telegram.WebApp.expand();
 }
 
+(function(){
+  var now=new Date();
+  var hh=String(now.getHours()).padStart(2,'0');
+  var mm=String(now.getMinutes()).padStart(2,'0');
+  var el=document.getElementById('upd-time');
+  if(el) el.textContent='обн. '+hh+':'+mm;
+})();
+
 var DAYS=['28ф','1м','2м','3м','4м','5м','6м','7м','8м','9м','10м','11м','12м','13м','14м','15м','16м','17м','18м','19м','20м','21м','22м','23м','24м','25м','26м','27м','28м','29м','30м','31м','1апр*'];
 var DR=[209,311,148,123,129,100,109,100,113,100,35,39,26,27,33,6,21,45,27,15,26,8,25,16,17,9,11,9,37,42,27,36,136];
 var BM=[137,20,28,11,9,5,9,7,16,12,9,6,10,7,9,4,6,10,13,7,4,3,4,7,5,4,15,6,20,16,11,8,16];
@@ -302,7 +310,8 @@ new Chart(document.getElementById('c0'),{type:'bar',
 });
 
 // c1 — weekly
-var wL=['нед1','нед2','нед3','нед4','нед5\n28–31'];
+var wL=['нед1','нед2','нед3','нед4','нед5
+29–33'];
 var wD=[TOT.slice(0,7),TOT.slice(7,14),TOT.slice(14,21),TOT.slice(21,28),TOT.slice(28,32)].map(function(a){return a.reduce(function(s,v){return s+v;},0);});
 new Chart(document.getElementById('c1'),{type:'bar',
   data:{labels:wL,datasets:[{data:wD,backgroundColor:[R,A,B,G,A+'99'],borderRadius:5}]},
@@ -337,7 +346,7 @@ new Chart(document.getElementById('c3'),{type:'bar',
 // c4 — launches per killed
 new Chart(document.getElementById('c4'),{type:'bar',
   data:{labels:['ОАЭ','Москва','Киев','Украина','Россия'],
-    datasets:[{data:[221,50,44,26.7,9.3],backgroundColor:[G,G+'88',A,R+'88',A+'88'],borderRadius:4}]},
+    datasets:[{data:[235,50,44,26.7,9.3],backgroundColor:[G,G+'88',A,R+'88',A+'88'],borderRadius:4}]},
   options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.raw+' запусков/погибший';}}}},
     scales:{x:{ticks:{color:tc,font:{size:10}},grid:{color:gc},border:{color:'transparent'}},y:yax()}}
 });
