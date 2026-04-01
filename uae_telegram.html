@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>UAE ПВО 2026</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:  var(--tg-theme-bg-color,#1c1c1e);
+  --sec: var(--tg-theme-secondary-bg-color,#2c2c2e);
+  --txt: var(--tg-theme-text-color,#ffffff);
+  --sub: var(--tg-theme-hint-color,#8e8e93);
+  --lnk: var(--tg-theme-link-color,#2d7dd2);
+  --div: rgba(255,255,255,.07);
+  --B:#2d7dd2; --G:#1fa06a; --A:#c47c0a; --R:#d63a3a;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--txt);font-family:-apple-system,'SF Pro Text','Helvetica Neue',sans-serif;font-size:14px;overflow-x:hidden}
+
+/* HEADER */
+.hdr{
+  background:var(--sec);
+  padding:10px 14px 9px;
+  border-bottom:.5px solid var(--div);
+  position:sticky;top:0;z-index:50;
+}
+.hdr-row{display:flex;align-items:center;justify-content:space-between}
+.hdr-t{font-size:14px;font-weight:700}
+.hdr-s{font-size:10px;color:var(--sub);margin-top:2px}
+.badge{font-size:10px;font-weight:700;background:rgba(214,58,58,.15);color:var(--R);border:.5px solid rgba(214,58,58,.3);border-radius:20px;padding:3px 9px}
+.live{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--R);margin-right:4px;animation:blink 2s ease infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* TABS */
+.tabs{display:flex;background:var(--sec);border-bottom:.5px solid var(--div);overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;background:none;border:none;border-bottom:2px solid transparent;padding:10px 16px;font-size:12px;font-weight:500;color:var(--sub);cursor:pointer;white-space:nowrap}
+.tab.on{color:var(--txt);border-bottom-color:var(--lnk)}
+
+/* PANELS */
+.panel{display:none;padding:12px 12px 32px}
+.panel.on{display:block}
+
+/* CARDS */
+.card{background:var(--sec);border-radius:13px;padding:12px;margin-bottom:10px}
+.ct{font-size:9px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.07em;margin-bottom:9px}
+
+/* STAT GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.stat{background:var(--sec);border-radius:11px;padding:10px 10px}
+.sl{font-size:9px;color:var(--sub);margin-bottom:3px;line-height:1.3}
+.sv{font-size:18px;font-weight:700;line-height:1.1}
+.ss{font-size:9px;color:var(--sub);margin-top:2px}
+
+/* CHARTS */
+.ch{position:relative;width:100%}
+
+/* LEGEND */
+.leg{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.li{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--sub)}
+.dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+
+/* NOTE */
+.note{font-size:10px;color:var(--sub);border-top:.5px solid var(--div);margin-top:8px;padding-top:7px;line-height:1.55}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:11px}
+.tbl th{padding:5px 7px;font-size:9px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.04em;border-bottom:.5px solid var(--div);text-align:left}
+.tbl td{padding:7px 7px;border-bottom:.5px solid rgba(255,255,255,.05);vertical-align:middle}
+.tbl tr:last-child td{border:none}
+
+/* PILLS */
+.pill{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:600}
+.pg{background:rgba(31,160,106,.18);color:#5dd4a0}
+.pa{background:rgba(196,124,10,.18);color:#f5b84a}
+.pr{background:rgba(213,58,58,.18);color:#f09090}
+.pb{background:rgba(45,125,210,.18);color:#7db8f0}
+
+/* NEWS */
+.news{background:var(--sec);border-radius:12px;padding:11px 12px;margin-bottom:8px}
+.ntag{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:8px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.tr{background:rgba(213,58,58,.18);color:#f09090}
+.ta{background:rgba(196,124,10,.18);color:#f5b84a}
+.tb{background:rgba(45,125,210,.18);color:#7db8f0}
+.ntit{font-size:13px;font-weight:600;margin-bottom:5px;line-height:1.35}
+.nbod{font-size:12px;color:var(--sub);line-height:1.55}
+.nmeta{font-size:10px;color:rgba(255,255,255,.25);margin-top:5px}
+
+/* TREND BLOCK */
+.trend{background:rgba(45,125,210,.07);border:.5px solid rgba(45,125,210,.22);border-radius:12px;padding:12px;margin-bottom:10px}
+.trend-t{font-size:9px;font-weight:700;color:var(--lnk);text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px}
+.trend-b{font-size:12px;color:var(--sub);line-height:1.65}
+.trend-b b{color:var(--txt)}
+
+/* DEADLINE BANNER */
+.deadline{
+  background:linear-gradient(135deg,rgba(214,58,58,.15),rgba(196,124,10,.1));
+  border:.5px solid rgba(214,58,58,.35);
+  border-radius:12px;padding:12px 13px;margin-bottom:10px;
+}
+.dl-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.dl-label{font-size:10px;font-weight:700;color:var(--R);text-transform:uppercase;letter-spacing:.06em}
+.dl-days{font-size:22px;font-weight:800;color:var(--R);line-height:1}
+.dl-caption{font-size:10px;color:var(--sub);line-height:1;margin-top:1px}
+.dl-body{font-size:12px;color:var(--sub);line-height:1.55}
+.dl-body b{color:var(--txt)}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-row">
+    <div>
+      <div class="hdr-t"><span class="live"></span>ПВО ОАЭ · Иранские удары 2026</div>
+      <div class="hdr-s">МО ОАЭ · The National · Al Jazeera &nbsp;·&nbsp; 1 апреля 2026</div>
+    </div>
+    <div class="badge">День 34</div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" onclick="sw(0)">📊 Цифры МО</button>
+  <button class="tab" onclick="sw(1)">🌍 Театры</button>
+  <button class="tab" onclick="sw(2)">📰 Тренды</button>
+</div>
+
+<!-- ══════════ TAB 0: ЦИФРЫ МО ══════════ -->
+<div class="panel on" id="p0">
+
+  <div class="g4">
+    <div class="stat"><div class="sl">Запусков</div><div class="sv">2 429</div><div class="ss">34 дня</div></div>
+    <div class="stat"><div class="sl">Баллист.</div><div class="sv" style="color:var(--B)">433</div><div class="ss">+19 крыл.</div></div>
+    <div class="stat"><div class="sl">Дронов</div><div class="sv" style="color:var(--G)">1 977</div><div class="ss">Shahed</div></div>
+    <div class="stat"><div class="sl">Перехват</div><div class="sv" style="color:var(--G)">~97%</div><div class="ss">нараст.</div></div>
+  </div>
+
+  <div class="g2">
+    <div class="stat"><div class="sl">Погибших</div><div class="sv" style="color:var(--R)">11</div><div class="ss">8 гражд. + 3 воен.</div></div>
+    <div class="stat"><div class="sl">Раненых</div><div class="sv" style="color:var(--A)">188</div><div class="ss">29 нац-тей</div></div>
+  </div>
+
+  <div class="card">
+    <div class="ct">Ежедневные запуски по типам</div>
+    <div class="leg">
+      <div class="li"><div class="dot" style="background:var(--G)"></div>Дроны</div>
+      <div class="li"><div class="dot" style="background:var(--B)"></div>Баллист.</div>
+      <div class="li"><div class="dot" style="background:var(--A)"></div>Крылатые</div>
+    </div>
+    <div class="ch" style="height:190px"><canvas id="c0"></canvas></div>
+    <div class="note">31 мар — закрыт официально. 1 апр — сводка МО не вышла. Крылатые ракеты: скачок с 15 до 19 за один день 31 мар.</div>
+  </div>
+
+  <div class="card">
+    <div class="ct">Итог по неделям</div>
+    <div class="ch" style="height:145px"><canvas id="c1"></canvas></div>
+  </div>
+
+  <div class="card">
+    <div class="ct">Нарастающие жертвы + объём атак</div>
+    <div class="leg">
+      <div class="li"><div class="dot" style="background:var(--A)"></div>Раненые →</div>
+      <div class="li"><div class="dot" style="background:var(--R)"></div>Погибшие ×10 →</div>
+      <div class="li"><div class="dot" style="background:rgba(45,125,210,.3)"></div>Запусков (нараст.) ←</div>
+    </div>
+    <div class="ch" style="height:180px"><canvas id="c2"></canvas></div>
+  </div>
+
+</div>
+
+<!-- ══════════ TAB 1: ТЕАТРЫ ══════════ -->
+<div class="panel" id="p1">
+
+  <div class="g2">
+    <div class="stat"><div class="sl">ОАЭ / млн</div><div class="sv" style="color:var(--G)">1,13</div><div class="ss">34 дня войны</div></div>
+    <div class="stat"><div class="sl">Москва / млн</div><div class="sv" style="color:var(--G)">&lt;0,8</div><div class="ss">2 года атак</div></div>
+    <div class="stat"><div class="sl">Украина 2025</div><div class="sv" style="color:var(--R)">66</div><div class="ss">/ млн / год</div></div>
+    <div class="stat"><div class="sl">Запуск / гиб.</div><div class="sv" style="color:var(--G)">221</div><div class="ss">исторический рекорд</div></div>
+  </div>
+
+  <div class="card">
+    <div class="ct">Погибших на 1 млн жителей (лог. шкала)</div>
+    <div class="ch" style="height:195px"><canvas id="c3"></canvas></div>
+    <div class="note">Логарифмическая шкала — иначе ОАЭ/Москва визуально неотличимы от нуля на фоне Украины и Лондонского блица.</div>
+  </div>
+
+  <div class="card">
+    <div class="ct">Запусков на 1 погибшего (↑ = эффективнее ПВО)</div>
+    <div class="ch" style="height:150px"><canvas id="c4"></canvas></div>
+  </div>
+
+  <div class="card">
+    <div class="ct">% перехвата по типам угроз</div>
+    <div class="ch" style="height:150px"><canvas id="c5"></canvas></div>
+    <div class="note">Ключевое отличие: у Украины баллистические ракеты перехватываются лишь на 18% (Iskander/Kinzhal). У ОАЭ — 97% (THAAD + PAC-3).</div>
+  </div>
+
+  <div class="card">
+    <div class="ct">Сводная таблица</div>
+    <table class="tbl">
+      <thead><tr><th>Театр</th><th>Период</th><th>Запусков</th><th>/1 млн</th><th>Оценка</th></tr></thead>
+      <tbody>
+        <tr><td><b>ОАЭ 2026</b></td><td>34 дня</td><td>2 429</td><td style="color:var(--G)"><b>0,82</b></td><td><span class="pill pg">Исключит.</span></td></tr>
+        <tr><td>Москва 24–25</td><td>2 года</td><td>~500</td><td style="color:var(--G)"><b>&lt;0,8</b></td><td><span class="pill pg">Сильно</span></td></tr>
+        <tr><td>Киев 2024</td><td>год</td><td>~1 550</td><td style="color:var(--A)"><b>11,9</b></td><td><span class="pill pg">Сильно</span></td></tr>
+        <tr><td>Россия 2025</td><td>год</td><td>~3 700</td><td style="color:var(--A)"><b>2,8</b></td><td><span class="pill pa">Умеренно</span></td></tr>
+        <tr><td>Украина 2025</td><td>год</td><td>~67 000</td><td style="color:var(--R)"><b>66</b></td><td><span class="pill pr">Давление</span></td></tr>
+        <tr><td>Израиль 7окт23</td><td>1 день</td><td>~4 000</td><td style="color:var(--R)"><b>126</b></td><td><span class="pill pr">Катастрофа</span></td></tr>
+        <tr><td>Лондон Блиц</td><td>год</td><td>>70 000</td><td style="color:var(--R)"><b>3 488</b></td><td><span class="pill pr">Катастрофа</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- ══════════ TAB 2: ТРЕНДЫ ══════════ -->
+<div class="panel" id="p2">
+
+  <!-- DEADLINE BANNER -->
+  <div class="deadline">
+    <div class="dl-top">
+      <div class="dl-label">⏳ Дедлайн Трампа</div>
+      <div><div class="dl-days">5</div><div class="dl-caption">дней до 6 апр</div></div>
+    </div>
+    <div class="dl-body">Трамп отложил удары по энергетике Ирана до <b>6 апреля (воскресенье)</b>. США передали 15-пунктный план через Пакистан. Иран отрицает прямые переговоры, но передал свои условия (репарации + Ормуз). Если сделки не будет — новая эскалация и риск ответных ударов по ОАЭ.</div>
+  </div>
+
+  <div class="trend">
+    <div class="trend-t">Тренды · 1 апреля 2026</div>
+    <div class="trend-b">
+      <b>Объём снижается, точность растёт.</b> Пик — 362 цели/день в нед. 1 (28 фев). Сейчас — 15–50/день. Но 31 мар: +4 крылатые ракеты за день (было 15 за весь месяц), удар по танкеру в порту Дубая — сигнал о диверсификации арсенала.<br><br>
+      <b>Настроения экспатов: полярные.</b> Лонгтаймеры остаются — «доверяем руководству, дом здесь» (Khaleej Times). Часть уехала в марте — пустые квартиры, брошенные питомцы. Техлидеры: «шум есть, структурного ущерба экосистеме нет». ЦБ ОАЭ — пакет 270 млрд $ для ликвидности.<br><br>
+      <b>ОАЭ рассматривают ответный удар.</b> Axios: UAE обдумывает активные оборонительные меры — unprecedented. Пока официальный курс — дипломатия + жёсткое ПВО.
+    </div>
+  </div>
+
+  <div class="news">
+    <div class="ntag tr">🏫 Критично · G12</div>
+    <div class="ntit">IB-экзамены отменены → NECM. GCSE/A Level пока по плану</div>
+    <div class="nbod">IB Diploma (27 апр — 20 мая) заменены Non-Exam Contingency Measure. Дедлайн курсовых — 15 апреля. Опции: перенос без доплаты / возврат средств. GCSE (4 мая — 19 июня) и A Level (11 мая — 23 июня) пока по плану. Дистанционка продлена до 17 апреля.</div>
+    <div class="nmeta">30–31 мар · WhichSchoolAdvisor · IBO · MoE UAE</div>
+  </div>
+
+  <div class="news">
+    <div class="ntag ta">🚢 Новая тактика</div>
+    <div class="ntit">Танкер в порту Дубая + крылатые ракеты — экономическое давление</div>
+    <div class="nbod">31 мар: дрон атаковал кувейтский танкер Al-Salmi (2 млн барр.) у берега Дубая. Пожар потушен, экипаж цел. Крылатые ракеты: 15 → 19 за один день. Иран также отозвал визы 1200 эмиратских граждан — зеркально на аннуляцию виз иранцев.</div>
+    <div class="nmeta">31 мар · Al Jazeera · Euronews · Dubai Media Office</div>
+  </div>
+
+  <div class="news">
+    <div class="ntag ta">🏛️ Бизнес-риск</div>
+    <div class="ntit">Визы иранцев аннулированы — проверить бизнес-цепочки</div>
+    <div class="nbod">ОАЭ аннулировали UAE residence visa иранских граждан за рубежом (включая 10-летние Golden Visa). Иранцы внутри ОАЭ пока не затронуты. Для DATALABSME: проверить Emirates ID иранских граждан в деловых цепочках через ICP-портал.</div>
+    <div class="nmeta">28–29 мар · Iran International · IMI Daily</div>
+  </div>
+
+  <div class="news">
+    <div class="ntag tb">✈️ Пхукет апрель–июнь</div>
+    <div class="ntit">Ждать 6 апреля — потом фиксировать даты</div>
+    <div class="nbod">DXB/AUH работают, но закрытия на 1–4 ч при каждой волне. До 6 апреля — только гибкие брони с бесплатной отменой. Если дедлайн пройдёт мирно — фиксировать апрельские даты на Пхукет. Запасной маршрут: Muscat или Doha.</div>
+    <div class="nmeta">1 апр · Gulf News · Newland Chase</div>
+  </div>
+
+</div><!-- /p2 -->
+
+<script>
+if(window.Telegram&&window.Telegram.WebApp){
+  Telegram.WebApp.ready();
+  Telegram.WebApp.expand();
+}
+
+var DAYS=['28ф','1м','2м','3м','4м','5м','6м','7м','8м','9м','10м','11м','12м','13м','14м','15м','16м','17м','18м','19м','20м','21м','22м','23м','24м','25м','26м','27м','28м','29м','30м','31м','1апр*'];
+var DR=[209,311,148,123,129,100,109,100,113,100,35,39,26,27,33,6,21,45,27,15,26,8,25,16,17,9,11,9,37,42,27,36,0];
+var BM=[137,20,28,11,9,5,9,7,16,12,9,6,10,7,9,4,6,10,13,7,4,3,4,7,5,4,15,6,20,16,11,8,0];
+var CM=[0,2,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0];
+var TOT=DR.map(function(d,i){return d+BM[i]+CM[i];});
+var CK=[1,1,3,3,3,3,3,3,4,4,6,6,6,6,6,6,6,8,8,8,8,8,8,8,9,9,11,11,11,11,11,11,11];
+var CI=[7,12,58,78,95,100,112,105,112,117,122,131,131,131,141,141,145,157,158,158,158,160,161,161,161,166,169,171,178,178,178,188,188];
+
+var tc='rgba(255,255,255,.42)';
+var gc='rgba(255,255,255,.07)';
+var B='#2d7dd2',G='#1fa06a',A='#c47c0a',R='#d63a3a';
+var N=DAYS.length;
+
+function xax(){return{ticks:{color:tc,font:{size:9},autoSkip:true,maxTicksLimit:10,maxRotation:0},grid:{color:gc},border:{color:'transparent'}};}
+function yax(mx){var o={ticks:{color:tc,font:{size:9}},grid:{color:gc},border:{color:'transparent'},min:0};if(mx)o.max=mx;return o;}
+function lax(){return{type:'logarithmic',ticks:{color:tc,font:{size:9},callback:function(v){return[0.1,1,10,100,1000,10000].indexOf(v)>-1?v:'';}},grid:{color:gc},border:{color:'transparent'},min:0.1};}
+function bgA(c1,c2,n){var a=[];for(var i=0;i<n;i++)a.push(i>=31?c2:c1);return a;}
+
+// c0 — stacked bar daily
+new Chart(document.getElementById('c0'),{type:'bar',
+  data:{labels:DAYS,datasets:[
+    {data:DR,backgroundColor:bgA(G+'88',G+'33',N),stack:'s',borderRadius:1},
+    {data:BM,backgroundColor:bgA(B+'99',B+'33',N),stack:'s',borderRadius:1},
+    {data:CM,backgroundColor:bgA(A+'bb',A+'44',N),stack:'s',borderRadius:1}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+    scales:{x:Object.assign({},xax(),{stacked:true}),y:Object.assign({},yax(440),{stacked:true})}}
+});
+
+// c1 — weekly
+var wL=['нед1','нед2','нед3','нед4','нед5\n28–31'];
+var wD=[TOT.slice(0,7),TOT.slice(7,14),TOT.slice(14,21),TOT.slice(21,28),TOT.slice(28,32)].map(function(a){return a.reduce(function(s,v){return s+v;},0);});
+new Chart(document.getElementById('c1'),{type:'bar',
+  data:{labels:wL,datasets:[{data:wD,backgroundColor:[R,A,B,G,A+'99'],borderRadius:5}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.raw.toLocaleString('ru')+' целей';}}}},
+    scales:{x:{ticks:{color:tc,font:{size:10}},grid:{color:gc},border:{color:'transparent'}},y:yax()}}
+});
+
+// c2 — casualties + volume
+var cum=0,CUM=TOT.map(function(v){cum+=v;return cum;});
+new Chart(document.getElementById('c2'),{
+  data:{labels:DAYS,datasets:[
+    {type:'bar', data:CUM,backgroundColor:'rgba(45,125,210,.12)',yAxisID:'y2',order:3},
+    {type:'line',data:CI, borderColor:A,backgroundColor:'rgba(196,124,10,.08)',fill:true,tension:0.4,pointRadius:0,yAxisID:'y1',borderWidth:2,order:1},
+    {type:'line',data:CK.map(function(v){return v*10;}),borderColor:R,tension:0.4,pointRadius:0,yAxisID:'y1',borderWidth:2,borderDash:[3,2],order:2}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+    scales:{x:xax(),
+      y1:{ticks:{color:tc,font:{size:9}},grid:{color:gc},border:{color:'transparent'},min:0,position:'left'},
+      y2:{ticks:{color:tc,font:{size:9}},grid:{display:false},border:{color:'transparent'},min:0,position:'right'}}}
+});
+
+// c3 — per million log
+var cmpL=['ОАЭ\n2026','Москва\n24–25','Россия\n2025','Киев\n2024','Израиль\n2026','Украина\n2025','Лондон\nБлиц'];
+var cmpV=[1.13,0.8,2.8,11.9,1.82,65.7,3488];
+var cmpC=[G,G+'88',A,A+'88',G+'77',R,R+'77'];
+new Chart(document.getElementById('c3'),{type:'bar',
+  data:{labels:cmpL,datasets:[{data:cmpV,backgroundColor:cmpC,borderRadius:4}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.raw+' погиб./млн жит.';} }}},
+    scales:{x:{ticks:{color:tc,font:{size:9},maxRotation:0,autoSkip:false},grid:{color:gc},border:{color:'transparent'}},y:lax()}}
+});
+
+// c4 — launches per killed
+new Chart(document.getElementById('c4'),{type:'bar',
+  data:{labels:['ОАЭ','Москва','Киев','Украина','Россия'],
+    datasets:[{data:[221,50,44,26.7,9.3],backgroundColor:[G,G+'88',A,R+'88',A+'88'],borderRadius:4}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.raw+' запусков/погибший';}}}},
+    scales:{x:{ticks:{color:tc,font:{size:10}},grid:{color:gc},border:{color:'transparent'}},y:yax()}}
+});
+
+// c5 — intercept %
+new Chart(document.getElementById('c5'),{type:'bar',
+  data:{labels:['ОАЭ\nдроны','ОАЭ\nбаллист.','Киев\nдроны','Укр.\nдроны','Укр.\nбаллист.','Москва\nдроны'],
+    datasets:[{data:[95,97,95,85,18,93],backgroundColor:[G,G+'ee',A,A+'88',R,A+'77'],borderRadius:4}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.raw+'% перехвачено';}}}},
+    scales:{x:{ticks:{color:tc,font:{size:9},maxRotation:0,autoSkip:false},grid:{color:gc},border:{color:'transparent'}},
+      y:Object.assign({},yax(100),{ticks:{color:tc,font:{size:9},callback:function(v){return v+'%';}}})}}
+});
+
+function sw(i){
+  document.querySelectorAll('.tab').forEach(function(t,j){t.classList.toggle('on',j===i);});
+  document.querySelectorAll('.panel').forEach(function(p,j){p.classList.toggle('on',j===i);});
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
