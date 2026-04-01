@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
 """
-scrape_data.py — Collects daily UAE air defence data from open sources.
+scrape_data.py — Collects daily UAE air defence data per DASHBOARD_RECIPE.md.
 
-Sources (in priority order):
-  1. Wikipedia "2026 Iranian strikes on the United Arab Emirates" — most complete log
-  2. Gulf News / Khaleej Times / The National — confirm MOD figures
-  3. Al Jazeera — regional context
+UPDATE PROCEDURE (Section 7):
+  1. Search: UAE MOD missiles drones [today's date] intercepted
+  2. Extract: daily BM, CM, DR counts from MOD statement
+  3. Update arrays: append new day to DR[], BM[], CM[], CK[], CI[]
+
+Sources (in priority order per recipe):
+  1. MOD UAE — @modgovae on X/Twitter
+  2. Gulf News — gulfnews.com
+  3. The National — thenationalnews.com
+  4. Khaleej Times — khaleejtimes.com
+  5. Wikipedia — "2026 Iranian strikes on the United Arab Emirates"
 
 Output: data/daily.json — structured daily data for update_html.py
 
@@ -18,14 +25,13 @@ import sys
 import logging
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Dict, List, Tuple
 
-# Use only stdlib + requests + bs4 (minimal deps)
 try:
     import requests
     from bs4 import BeautifulSoup
 except ImportError:
-    print("ERROR: Install dependencies: pip install requests beautifulsoup4")
+    print("ERROR: Install dependencies: pip install requests beautifulsoup4 lxml")
     sys.exit(1)
 
 logging.basicConfig(
@@ -38,28 +44,41 @@ log = logging.getLogger("scrape")
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = REPO_ROOT / "data"
 DATA_FILE = DATA_DIR / "daily.json"
+NEWS_FILE = DATA_DIR / "news.json"
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; GulfReportBot/1.0; +https://github.com/mberlizev/gulf-report)"
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                  "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 }
 
 # The conflict started Feb 28 2026
 START_DATE = datetime(2026, 2, 28)
 
-# Wikipedia article — most structured running log
+# === SOURCE URLs ===
 WIKI_URL = "https://en.wikipedia.org/wiki/2026_Iranian_strikes_on_the_United_Arab_Emirates"
 
-# Search patterns for daily figures in Wikipedia narrative
-# Pattern: "N ballistic missiles" / "N drones" / "N cruise missiles"
+# News search URLs (we try Google News RSS as a free search proxy)
+SEARCH_TEMPLATES = [
+    "https://news.google.com/rss/search?q={query}&hl=en&gl=AE&ceid=AE:en",
+]
+
+# Direct source URLs for daily scraping
+GULF_NEWS_URL = "https://gulfnews.com/uae"
+NATIONAL_URL = "https://www.thenationalnews.com/uae/"
+KHALEEJ_URL = "https://www.khaleejtimes.com/uae"
+
+# === REGEX PATTERNS ===
 RE_BALLISTIC = re.compile(r'(\d+)\s*(?:ballistic\s*missiles?)', re.IGNORECASE)
 RE_DRONES = re.compile(r'(\d+)\s*(?:drones?|UAVs?|Shahed)', re.IGNORECASE)
 RE_CRUISE = re.compile(r'(\d+)\s*(?:cruise\s*missiles?)', re.IGNORECASE)
 RE_KILLED = re.compile(r'(\d+)\s*(?:killed|dead|deaths?|fatalities)', re.IGNORECASE)
 RE_INJURED = re.compile(r'(\d+)\s*(?:injured|wounded|hurt)', re.IGNORECASE)
+RE_INTERCEPTED = re.compile(r'(?:intercepted|shot\s*down|destroyed)\s*(\d+)', re.IGNORECASE)
+RE_TOTAL_LAUNCHES = re.compile(r'(\d+)\s*(?:projectiles?|launches?|targets?|objects?)', re.IGNORECASE)
 
-# Date patterns in Wikipedia section headers and text
 RE_DATE_HEADER = re.compile(
-    r'(\d{1,2})\s*(January|February|March|April|May|June|July|August|September|October|November|December)\s*(\d{4})?',
+    r'(\d{1,2})\s*(January|February|March|April|May|June|July|August|'
+    r'September|October|November|December)\s*(\d{4})?',
     re.IGNORECASE
 )
 
@@ -70,20 +89,216 @@ MONTH_MAP = {
 }
 
 
-def fetch_url(url: str, timeout: int = 30) -> Optional[str]:
+def fetch_url(url, timeout=30):
     """Fetch URL content with error handling."""
     try:
         resp = requests.get(url, headers=HEADERS, timeout=timeout)
         resp.raise_for_status()
         return resp.text
     except requests.RequestException as e:
-        log.warning(f"Failed to fetch {url}: {e}")
+        log.warning("Failed to fetch %s: %s", url, e)
         return None
 
 
-def parse_wikipedia() -> dict:
+def search_news(query, max_results=10):
     """
-    Parse the Wikipedia article for daily attack data.
+    Search for news articles using Google News RSS feed.
+    Returns list of dicts: [{"title": ..., "link": ..., "source": ..., "date": ...}]
+    """
+    results = []
+    encoded_query = requests.utils.quote(query)
+
+    for template in SEARCH_TEMPLATES:
+        url = template.format(query=encoded_query)
+        xml = fetch_url(url)
+        if not xml:
+            continue
+
+        soup = BeautifulSoup(xml, "xml")
+        items = soup.find_all("item")
+
+        for item in items[:max_results]:
+            title = item.find("title")
+            link = item.find("link")
+            pub_date = item.find("pubDate")
+            source_tag = item.find("source")
+
+            results.append({
+                "title": title.get_text(strip=True) if title else "",
+                "link": link.get_text(strip=True) if link else "",
+                "source": source_tag.get_text(strip=True) if source_tag else "",
+                "date": pub_date.get_text(strip=True) if pub_date else "",
+            })
+
+        if results:
+            break
+
+    log.info("Search '%s': found %d results", query[:50], len(results))
+    return results
+
+
+def extract_daily_figures_from_text(text):
+    """
+    Extract BM, DR, CM counts from a text block (MOD statement or article).
+    Returns dict with keys: dr, bm, cm (or None if not found).
+    """
+    figures = {"dr": None, "bm": None, "cm": None}
+
+    dr_matches = RE_DRONES.findall(text)
+    bm_matches = RE_BALLISTIC.findall(text)
+    cm_matches = RE_CRUISE.findall(text)
+
+    # Take the largest number found for each type (usually the daily total)
+    if dr_matches:
+        val = max(int(x) for x in dr_matches)
+        if val < 500:  # sanity: daily drones should be < 500
+            figures["dr"] = val
+    if bm_matches:
+        val = max(int(x) for x in bm_matches)
+        if val < 200:  # sanity: daily ballistic should be < 200
+            figures["bm"] = val
+    if cm_matches:
+        val = max(int(x) for x in cm_matches)
+        if val < 100:  # sanity: daily cruise should be < 100
+            figures["cm"] = val
+
+    return figures
+
+
+def extract_casualties_from_text(text):
+    """Extract cumulative killed/injured from text."""
+    result = {"ck": None, "ci": None}
+
+    ck_matches = RE_KILLED.findall(text)
+    ci_matches = RE_INJURED.findall(text)
+
+    if ck_matches:
+        val = max(int(x) for x in ck_matches)
+        if val < 500:  # sanity
+            result["ck"] = val
+    if ci_matches:
+        val = max(int(x) for x in ci_matches)
+        if val < 5000:  # sanity
+            result["ci"] = val
+
+    return result
+
+
+def scrape_mod_statement_from_search(target_date):
+    """
+    Recipe Step 1: Search for UAE MOD statement for a specific date.
+    Query: UAE MOD missiles drones [date] intercepted
+    Returns figures dict or empty dict.
+    """
+    date_str = target_date.strftime("%B %d %Y")
+    queries = [
+        'UAE MOD "%s" missiles drones intercepted' % date_str,
+        "UAE air defence today %s casualties latest" % target_date.strftime("%B %Y"),
+        "UAE ministry defense %s intercepted drones ballistic" % date_str,
+    ]
+
+    for query in queries:
+        articles = search_news(query)
+        for article in articles:
+            # Try to fetch the article content
+            if not article.get("link"):
+                continue
+
+            html = fetch_url(article["link"])
+            if not html:
+                continue
+
+            soup = BeautifulSoup(html, "html.parser")
+            # Remove scripts, styles, nav
+            for tag in soup.find_all(["script", "style", "nav", "header", "footer"]):
+                tag.decompose()
+
+            text = soup.get_text(" ", strip=True)
+            figures = extract_daily_figures_from_text(text)
+            casualties = extract_casualties_from_text(text)
+
+            # Need at least drones or ballistic to consider valid
+            if figures["dr"] is not None or figures["bm"] is not None:
+                log.info("MOD search hit: %s (source: %s)", article["title"][:60], article["source"])
+                result = {
+                    "dr": figures["dr"] or 0,
+                    "bm": figures["bm"] or 0,
+                    "cm": figures["cm"] or 0,
+                }
+                if casualties["ck"] is not None:
+                    result["ck"] = casualties["ck"]
+                if casualties["ci"] is not None:
+                    result["ci"] = casualties["ci"]
+                return result
+
+    log.warning("No MOD statement found for %s", date_str)
+    return {}
+
+
+def scrape_gulf_news(target_date):
+    """Try Gulf News for daily figures."""
+    html = fetch_url(GULF_NEWS_URL)
+    if not html:
+        return {}
+
+    soup = BeautifulSoup(html, "html.parser")
+    for tag in soup.find_all(["script", "style"]):
+        tag.decompose()
+
+    # Look for articles mentioning intercepted/missiles/drones
+    articles = soup.find_all("article")
+    if not articles:
+        articles = soup.find_all("div", class_=re.compile(r"article|story|card"))
+
+    for article in articles[:20]:
+        text = article.get_text(" ", strip=True)
+        if any(kw in text.lower() for kw in ["intercept", "missile", "drone", "ballistic", "air defence"]):
+            figures = extract_daily_figures_from_text(text)
+            if figures["dr"] is not None or figures["bm"] is not None:
+                log.info("Gulf News hit: %s", text[:80])
+                return {
+                    "dr": figures["dr"] or 0,
+                    "bm": figures["bm"] or 0,
+                    "cm": figures["cm"] or 0,
+                }
+
+    log.info("Gulf News: no matching articles found")
+    return {}
+
+
+def scrape_khaleej_times(target_date):
+    """Try Khaleej Times for daily figures."""
+    html = fetch_url(KHALEEJ_URL)
+    if not html:
+        return {}
+
+    soup = BeautifulSoup(html, "html.parser")
+    for tag in soup.find_all(["script", "style"]):
+        tag.decompose()
+
+    articles = soup.find_all("article")
+    if not articles:
+        articles = soup.find_all("div", class_=re.compile(r"article|story|card"))
+
+    for article in articles[:20]:
+        text = article.get_text(" ", strip=True)
+        if any(kw in text.lower() for kw in ["intercept", "missile", "drone", "ballistic", "air defence", "gulf_defense"]):
+            figures = extract_daily_figures_from_text(text)
+            if figures["dr"] is not None or figures["bm"] is not None:
+                log.info("Khaleej Times hit: %s", text[:80])
+                return {
+                    "dr": figures["dr"] or 0,
+                    "bm": figures["bm"] or 0,
+                    "cm": figures["cm"] or 0,
+                }
+
+    log.info("Khaleej Times: no matching articles found")
+    return {}
+
+
+def parse_wikipedia():
+    """
+    Parse Wikipedia article for daily attack data (cross-reference source).
     Returns dict: { "2026-03-01": {"dr": N, "bm": N, "cm": N, "ck": N, "ci": N}, ... }
     """
     html = fetch_url(WIKI_URL)
@@ -93,14 +308,13 @@ def parse_wikipedia() -> dict:
 
     soup = BeautifulSoup(html, "html.parser")
 
-    # Remove references/citations to clean up text
+    # Remove references/citations
     for ref in soup.find_all(["sup", "style", "script"]):
         ref.decompose()
 
     daily_data = {}
     current_date = None
 
-    # Walk through all headings and paragraphs
     content = soup.find("div", {"id": "mw-content-text"})
     if not content:
         content = soup
@@ -121,7 +335,6 @@ def parse_wikipedia() -> dict:
                 except ValueError:
                     pass
 
-        # Also check for inline dates in paragraphs
         if not current_date and date_match:
             day = int(date_match.group(1))
             month_name = date_match.group(2).lower()
@@ -134,7 +347,6 @@ def parse_wikipedia() -> dict:
                     pass
 
         if current_date and el.name in ("p", "li"):
-            # Extract numbers from this paragraph
             bm_matches = RE_BALLISTIC.findall(text)
             dr_matches = RE_DRONES.findall(text)
             cm_matches = RE_CRUISE.findall(text)
@@ -145,7 +357,6 @@ def parse_wikipedia() -> dict:
                 if current_date not in daily_data:
                     daily_data[current_date] = {"dr": 0, "bm": 0, "cm": 0, "ck": None, "ci": None}
 
-                # Take the largest number found (usually the daily total)
                 if dr_matches:
                     daily_data[current_date]["dr"] = max(
                         daily_data[current_date]["dr"],
@@ -162,12 +373,11 @@ def parse_wikipedia() -> dict:
                         max(int(x) for x in cm_matches)
                     )
 
-            # Casualty figures — these are cumulative in MOD statements
             if ck_matches:
                 if current_date not in daily_data:
                     daily_data[current_date] = {"dr": 0, "bm": 0, "cm": 0, "ck": None, "ci": None}
                 val = max(int(x) for x in ck_matches)
-                if val < 500:  # sanity: not a launch count misread
+                if val < 500:
                     daily_data[current_date]["ck"] = val
 
             if ci_matches:
@@ -177,25 +387,44 @@ def parse_wikipedia() -> dict:
                 if val < 5000:
                     daily_data[current_date]["ci"] = val
 
-    log.info(f"Wikipedia: parsed {len(daily_data)} dated entries")
+    log.info("Wikipedia: parsed %d dated entries", len(daily_data))
     return daily_data
 
 
-def load_existing_data() -> dict:
-    """Load existing daily.json if it exists."""
-    if DATA_FILE.exists():
-        try:
-            with open(DATA_FILE) as f:
-                return json.load(f)
-        except (json.JSONDecodeError, IOError):
-            log.warning("Could not parse existing daily.json, starting fresh")
-    return {"meta": {}, "days": {}}
-
-
-def extract_existing_from_html() -> dict:
+def scrape_news_items():
     """
-    Extract the current data arrays from the HTML file as baseline.
-    This is the authoritative source until we get new data from scraping.
+    Recipe Step 7: Search for latest news for the Trends tab.
+    Categories: school/IB, ceasefire, new tactics, visa, aviation.
+    Returns list of news dicts.
+    """
+    news_queries = [
+        ("school", "UAE schools IB exams distance learning 2026"),
+        ("ceasefire", "Iran UAE ceasefire negotiations Trump deadline 2026"),
+        ("tactics", "UAE drone missile new tactic attack escalation 2026"),
+        ("visa", "UAE Iran visa cancellation residence 2026"),
+        ("aviation", "Dubai airport DXB flights operational closure 2026"),
+    ]
+
+    all_news = []
+
+    for category, query in news_queries:
+        articles = search_news(query, max_results=3)
+        for article in articles[:2]:  # Top 2 per category
+            all_news.append({
+                "category": category,
+                "title": article.get("title", ""),
+                "source": article.get("source", ""),
+                "link": article.get("link", ""),
+                "date": article.get("date", ""),
+            })
+
+    log.info("News: collected %d items across %d categories", len(all_news), len(news_queries))
+    return all_news
+
+
+def extract_existing_from_html():
+    """
+    Extract current data arrays from HTML as authoritative baseline.
     """
     html_file = REPO_ROOT / "uae_telegram.html"
     if not html_file.exists():
@@ -203,8 +432,8 @@ def extract_existing_from_html() -> dict:
 
     html = html_file.read_text(encoding="utf-8")
 
-    def extract_array(var_name: str) -> list:
-        pattern = rf"var\s+{var_name}\s*=\s*\[([\d,\s]+)\]"
+    def extract_array(var_name):
+        pattern = r"var\s+%s\s*=\s*\[([\d,\s]+)\]" % var_name
         m = re.search(pattern, html)
         if m:
             return [int(x.strip()) for x in m.group(1).split(",") if x.strip()]
@@ -227,19 +456,27 @@ def extract_existing_from_html() -> dict:
             "ci": ci[i] if i < len(ci) else None,
         }
 
-    log.info(f"Extracted {len(days)} days from existing HTML")
+    log.info("Extracted %d days from existing HTML", len(days))
     return days
 
 
-def merge_data(existing: dict, scraped: dict, trust_existing_launches: bool = False) -> dict:
+def load_existing_data():
+    """Load existing daily.json if it exists."""
+    if DATA_FILE.exists():
+        try:
+            with open(DATA_FILE) as f:
+                return json.load(f)
+        except (json.JSONDecodeError, IOError):
+            log.warning("Could not parse existing daily.json, starting fresh")
+    return {"meta": {}, "days": {}}
+
+
+def merge_data(existing, scraped, trust_existing_launches=False):
     """
     Merge scraped data into existing data.
 
     If trust_existing_launches=True, never overwrite DR/BM/CM for days that
     already exist (the HTML baseline is authoritative for launch counts).
-    Wikipedia often cites cumulative totals that look like daily values.
-
-    Casualty figures (CK/CI) can always be updated upward since they're cumulative.
     """
     merged = dict(existing)
 
@@ -252,37 +489,31 @@ def merge_data(existing: dict, scraped: dict, trust_existing_launches: bool = Fa
         )
 
         if date not in merged or is_placeholder:
-            # New day or placeholder (all zeros) — add/update it
-            # Sanity-check: Wikipedia cumulative totals can be 1000+; real daily max is ~400
+            # Sanity-check: daily values shouldn't be suspiciously high
             if vals.get("dr", 0) > 500 or vals.get("bm", 0) > 200:
-                log.warning(f"Skipping suspicious day {date}: DR={vals.get('dr')} BM={vals.get('bm')} (likely cumulative)")
+                log.warning("Skipping suspicious day %s: DR=%s BM=%s (likely cumulative)",
+                            date, vals.get("dr"), vals.get("bm"))
                 continue
             if is_placeholder:
                 merged[date].update(vals)
-                log.info(f"FILLED placeholder: {date} — DR:{vals['dr']} BM:{vals['bm']} CM:{vals['cm']}")
+                log.info("FILLED placeholder: %s -- DR:%s BM:%s CM:%s",
+                         date, vals.get("dr"), vals.get("bm"), vals.get("cm"))
             else:
                 merged[date] = vals
-                log.info(f"NEW day: {date} — DR:{vals['dr']} BM:{vals['bm']} CM:{vals['cm']}")
+                log.info("NEW day: %s -- DR:%s BM:%s CM:%s",
+                         date, vals.get("dr"), vals.get("bm"), vals.get("cm"))
         else:
             old = merged[date]
             updated = False
 
-            # Launch counts: only update if source is trusted
             if not trust_existing_launches:
                 for key in ("dr", "bm", "cm"):
                     if vals.get(key) and vals[key] > old.get(key, 0):
-                        # Sanity check: daily values shouldn't exceed reasonable max
                         if (key == "dr" and vals[key] > 500) or (key == "bm" and vals[key] > 200):
-                            log.warning(f"Skipping suspicious {key}={vals[key]} for {date} (likely cumulative)")
+                            log.warning("Skipping suspicious %s=%s for %s", key, vals[key], date)
                             continue
                         old[key] = vals[key]
                         updated = True
-            else:
-                # When trusting existing launches, do NOT fill in zeros from scraped data.
-                # Wikipedia often cites cumulative totals ("19 cruise missiles total")
-                # in the same paragraph as a specific date, making it look like a daily value.
-                # Only add launch data for genuinely NEW days (handled above).
-                pass
 
             # Casualties: always allow upward updates (cumulative)
             for key in ("ck", "ci"):
@@ -291,17 +522,15 @@ def merge_data(existing: dict, scraped: dict, trust_existing_launches: bool = Fa
                     updated = True
 
             if updated:
-                log.info(f"UPDATED day: {date}")
+                log.info("UPDATED day: %s", date)
 
     return merged
 
 
-def forward_fill_casualties(days: dict) -> dict:
+def forward_fill_casualties(days):
     """
-    Casualty figures (CK, CI) are cumulative — forward fill gaps.
-    If a day has no casualty data, carry forward from the last known value.
-    Also enforce monotonicity: if a scraped value is LOWER than the previous
-    day's cumulative, it's a per-incident figure, not cumulative — discard it.
+    Casualty figures (CK, CI) are cumulative -- forward fill gaps.
+    Enforce monotonicity.
     """
     sorted_dates = sorted(days.keys())
     last_ck = 0
@@ -322,26 +551,71 @@ def forward_fill_casualties(days: dict) -> dict:
 
 
 def main():
-    log.info("=== Gulf Report Data Scraper ===")
+    log.info("=== Gulf Report Data Scraper (Recipe-based) ===")
 
-    # Step 1: Load baseline from existing HTML
+    today = datetime.utcnow().date()
+    target_date = datetime(today.year, today.month, today.day)
+    target_date_str = target_date.strftime("%Y-%m-%d")
+
+    # Step 1: Load baseline from existing HTML (authoritative)
     existing_days = extract_existing_from_html()
 
-    # Step 2: Load any previously saved data
+    # Step 2: Load previously saved data
     saved = load_existing_data()
     if saved.get("days"):
         existing_days = merge_data(existing_days, saved["days"])
 
-    # Step 3: Scrape Wikipedia
+    # Step 3: Check if today's data is already present and non-zero
+    today_data = existing_days.get(target_date_str, {})
+    today_has_data = (
+        today_data.get("dr", 0) > 0 or
+        today_data.get("bm", 0) > 0
+    )
+
+    new_day_data = {}
+
+    if not today_has_data:
+        log.info("No data for %s yet, searching sources...", target_date_str)
+
+        # Recipe Step 1-2: Search MOD statement via news search
+        mod_data = scrape_mod_statement_from_search(target_date)
+        if mod_data:
+            new_day_data[target_date_str] = mod_data
+            log.info("MOD search: DR=%s BM=%s CM=%s",
+                     mod_data.get("dr"), mod_data.get("bm"), mod_data.get("cm"))
+
+        # Fallback: Gulf News
+        if not new_day_data.get(target_date_str):
+            gn_data = scrape_gulf_news(target_date)
+            if gn_data:
+                new_day_data[target_date_str] = gn_data
+
+        # Fallback: Khaleej Times
+        if not new_day_data.get(target_date_str):
+            kt_data = scrape_khaleej_times(target_date)
+            if kt_data:
+                new_day_data[target_date_str] = kt_data
+    else:
+        log.info("Today %s already has data: DR=%s BM=%s CM=%s",
+                 target_date_str, today_data.get("dr"), today_data.get("bm"), today_data.get("cm"))
+
+    # Step 4: Always scrape Wikipedia as cross-reference
     wiki_data = parse_wikipedia()
 
-    # Step 4: Merge — trust existing launch counts, only add new days or update casualties
+    # Step 5: Merge -- trust existing launch counts, add new days/casualties
     merged = merge_data(existing_days, wiki_data, trust_existing_launches=True)
 
-    # Step 5: Forward-fill casualties
+    # Merge new day data from MOD/news (higher priority than Wikipedia)
+    if new_day_data:
+        merged = merge_data(merged, new_day_data, trust_existing_launches=False)
+
+    # Step 6: Forward-fill casualties
     merged = forward_fill_casualties(merged)
 
-    # Step 6: Compute summary
+    # Step 7: Scrape news for Trends tab
+    news_items = scrape_news_items()
+
+    # Compute summary
     sorted_dates = sorted(merged.keys())
     total_dr = sum(merged[d]["dr"] for d in sorted_dates)
     total_bm = sum(merged[d]["bm"] for d in sorted_dates)
@@ -367,16 +641,25 @@ def main():
 
     output = {"meta": meta, "days": merged}
 
-    # Step 7: Save
+    # Save daily.json
     DATA_DIR.mkdir(exist_ok=True)
     with open(DATA_FILE, "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
 
-    log.info(f"Saved {len(merged)} days to {DATA_FILE}")
-    log.info(f"Summary: {num_days} days, {total} launches (DR:{total_dr} BM:{total_bm} CM:{total_cm})")
-    log.info(f"Casualties: {last_ck} killed, {last_ci} injured")
+    # Save news.json
+    if news_items:
+        with open(NEWS_FILE, "w", encoding="utf-8") as f:
+            json.dump({
+                "updated": datetime.utcnow().isoformat() + "Z",
+                "items": news_items,
+            }, f, ensure_ascii=False, indent=2)
+        log.info("Saved %d news items to %s", len(news_items), NEWS_FILE)
 
-    # Return non-zero if no data at all
+    log.info("Saved %d days to %s", len(merged), DATA_FILE)
+    log.info("Summary: %d days, %d launches (DR:%d BM:%d CM:%d)",
+             num_days, total, total_dr, total_bm, total_cm)
+    log.info("Casualties: %d killed, %d injured", last_ck, last_ci)
+
     if not merged:
         log.error("No data collected!")
         return 1

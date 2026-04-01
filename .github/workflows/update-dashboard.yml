@@ -2,7 +2,7 @@ name: Update UAE Dashboard
 
 on:
   schedule:
-    # Run every hour at minute 15
+    # Run every hour at minute 15 (per recipe: GitHub Actions cron every hour)
     - cron: '15 * * * *'
   workflow_dispatch:
     # Allow manual trigger from GitHub UI
@@ -28,15 +28,28 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Scrape latest data
+      - name: Scrape latest data (MOD + Wikipedia + news sources)
         run: python scripts/scrape_data.py
         env:
           PYTHONUNBUFFERED: '1'
+        # scrape_data.py fails gracefully per source; only returns 1 if zero data total
+        continue-on-error: false
 
-      - name: Update HTML dashboard
+      - name: Update HTML dashboard (arrays, badge, stats, news)
         run: python scripts/update_html.py
         env:
           PYTHONUNBUFFERED: '1'
+
+      - name: Validate HTML is not empty
+        run: |
+          if [ ! -s uae_telegram.html ]; then
+            echo "ERROR: uae_telegram.html is empty!"
+            exit 1
+          fi
+          # Check that key data arrays are present
+          grep -q 'var DR=' uae_telegram.html || { echo "ERROR: DR array missing"; exit 1; }
+          grep -q 'var BM=' uae_telegram.html || { echo "ERROR: BM array missing"; exit 1; }
+          echo "HTML validation passed"
 
       - name: Check for changes
         id: changes
@@ -48,6 +61,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/daily.json uae_telegram.html
+          git add data/daily.json data/news.json uae_telegram.html
           git commit -m "auto: update dashboard data $(date -u +'%Y-%m-%d %H:%M UTC')"
           git push
