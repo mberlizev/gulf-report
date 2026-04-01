@@ -33,6 +33,12 @@ html,body{background:var(--bg);color:var(--txt);font-family:-apple-system,'SF Pr
 .live{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--R);margin-right:4px;animation:blink 2s ease infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 
+/* LANG SWITCHER */
+.lang-bar{display:flex;justify-content:center;gap:0;padding:5px 14px;background:var(--sec);border-bottom:.5px solid var(--div)}
+.lang-wrap{display:flex;background:rgba(255,255,255,.06);border-radius:8px;padding:2px;gap:1px}
+.lng{background:none;border:none;color:var(--sub);font-size:11px;font-weight:600;padding:4px 11px;border-radius:6px;cursor:pointer;transition:all .2s}
+.lng.on{background:var(--lnk);color:#fff}
+
 /* TABS */
 .tabs{display:flex;background:var(--sec);border-bottom:.5px solid var(--div);overflow-x:auto;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
@@ -103,10 +109,10 @@ html,body{background:var(--bg);color:var(--txt);font-family:-apple-system,'SF Pr
 }
 .dl-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
 .dl-label{font-size:10px;font-weight:700;color:var(--R);text-transform:uppercase;letter-spacing:.06em}
-.dl-days{font-size:22px;font-weight:800;color:var(--R);line-height:1}
-.dl-caption{font-size:10px;color:var(--sub);line-height:1;margin-top:1px}
 .dl-body{font-size:12px;color:var(--sub);line-height:1.55}
 .dl-body b{color:var(--txt)}
+.dl-days{font-size:22px;font-weight:800;color:var(--R);line-height:1}
+.dl-caption{font-size:10px;color:var(--sub);line-height:1;margin-top:1px}
 </style>
 </head>
 <body>
@@ -114,56 +120,66 @@ html,body{background:var(--bg);color:var(--txt);font-family:-apple-system,'SF Pr
 <div class="hdr">
   <div class="hdr-row">
     <div>
-      <div class="hdr-t"><span class="live"></span>ПВО ОАЭ · Иранские удары 2026</div>
+      <div class="hdr-t"><span class="live"></span><span data-t="title">ПВО ОАЭ · Иранские удары 2026</span></div>
       <div class="hdr-s">МО ОАЭ · The National · Al Jazeera &nbsp;·&nbsp; 1 апреля 2026 &nbsp;·&nbsp; <span id="upd-time"></span></div>
     </div>
-    <div class="badge">День 33</div>
+    <div class="badge"><span data-t="badge">День</span> 33</div>
+  </div>
+</div>
+
+<div class="lang-bar">
+  <div class="lang-wrap">
+    <button class="lng" onclick="setLang('en')">En</button>
+    <button class="lng on" onclick="setLang('ru')">Ru</button>
+    <button class="lng" onclick="setLang('ar')">ع</button>
+    <button class="lng" onclick="setLang('fr')">Fr</button>
+    <button class="lng" onclick="setLang('it')">It</button>
   </div>
 </div>
 
 <div class="tabs">
-  <button class="tab on" onclick="sw(0)">📊 Цифры МО</button>
-  <button class="tab" onclick="sw(1)">🌍 Театры</button>
-  <button class="tab" onclick="sw(2)">📰 Тренды</button>
+  <button class="tab on" onclick="sw(0)" data-t="tab0">📊 Цифры МО</button>
+  <button class="tab" onclick="sw(1)" data-t="tab1">🌍 Театры</button>
+  <button class="tab" onclick="sw(2)" data-t="tab2">📰 Тренды</button>
 </div>
 
 <!-- ══════════ TAB 0: ЦИФРЫ МО ══════════ -->
 <div class="panel on" id="p0">
 
   <div class="g4">
-    <div class="stat"><div class="sl">Запусков</div><div class="sv">2 582</div><div class="ss">33 дня</div></div>
-    <div class="stat"><div class="sl">Баллист.</div><div class="sv" style="color:var(--B)">454</div><div class="ss">+13 крыл.</div></div>
-    <div class="stat"><div class="sl">Дронов</div><div class="sv" style="color:var(--G)">2 115</div><div class="ss">Shahed</div></div>
-    <div class="stat"><div class="sl">Перехват</div><div class="sv" style="color:var(--G)">~97%</div><div class="ss">нараст.</div></div>
+    <div class="stat"><div class="sl" data-t="launches">Запусков</div><div class="sv">2 582</div><div class="ss" data-t="ss_days">33 дня</div></div>
+    <div class="stat"><div class="sl" data-t="ballistic">Баллист.</div><div class="sv" style="color:var(--B)">454</div><div class="ss" data-t="ss_cruise">+13 крыл.</div></div>
+    <div class="stat"><div class="sl" data-t="drones">Дронов</div><div class="sv" style="color:var(--G)">2 115</div><div class="ss">Shahed</div></div>
+    <div class="stat"><div class="sl" data-t="intercept">Перехват</div><div class="sv" style="color:var(--G)">~97%</div><div class="ss" data-t="ss_cumul">нараст.</div></div>
   </div>
 
   <div class="g2">
-    <div class="stat"><div class="sl">Погибших</div><div class="sv" style="color:var(--R)">11</div><div class="ss">8 гражд. + 3 воен.</div></div>
-    <div class="stat"><div class="sl">Раненых</div><div class="sv" style="color:var(--A)">188</div><div class="ss">29 нац-тей</div></div>
+    <div class="stat"><div class="sl" data-t="killed">Погибших</div><div class="sv" style="color:var(--R)">11</div><div class="ss" data-t="ss_civmil">8 гражд. + 3 воен.</div></div>
+    <div class="stat"><div class="sl" data-t="injured">Раненых</div><div class="sv" style="color:var(--A)">188</div><div class="ss" data-t="ss_nat">29 нац-тей</div></div>
   </div>
 
   <div class="card">
-    <div class="ct">Ежедневные запуски по типам</div>
+    <div class="ct" data-t="ct_daily">Ежедневные запуски по типам</div>
     <div class="leg">
-      <div class="li"><div class="dot" style="background:var(--G)"></div>Дроны</div>
-      <div class="li"><div class="dot" style="background:var(--B)"></div>Баллист.</div>
-      <div class="li"><div class="dot" style="background:var(--A)"></div>Крылатые</div>
+      <div class="li"><div class="dot" style="background:var(--G)"></div><span data-t="leg_drones">Дроны</span></div>
+      <div class="li"><div class="dot" style="background:var(--B)"></div><span data-t="leg_ballistic">Баллист.</span></div>
+      <div class="li"><div class="dot" style="background:var(--A)"></div><span data-t="leg_cruise">Крылатые</span></div>
     </div>
     <div class="ch" style="height:190px"><canvas id="c0"></canvas></div>
-    <div class="note">31 мар — закрыт официально. 1 апр — сводка МО не вышла. Крылатые ракеты: скачок с 15 до 19 за один день 31 мар.</div>
+    <div class="note" data-t="note_daily">31 мар — закрыт официально. 1 апр — сводка МО не вышла. Крылатые ракеты: скачок с 15 до 19 за один день 31 мар.</div>
   </div>
 
   <div class="card">
-    <div class="ct">Итог по неделям</div>
+    <div class="ct" data-t="ct_weekly">Итог по неделям</div>
     <div class="ch" style="height:145px"><canvas id="c1"></canvas></div>
   </div>
 
   <div class="card">
-    <div class="ct">Нарастающие жертвы + объём атак</div>
+    <div class="ct" data-t="ct_casualties">Нарастающие жертвы + объём атак</div>
     <div class="leg">
-      <div class="li"><div class="dot" style="background:var(--A)"></div>Раненые →</div>
-      <div class="li"><div class="dot" style="background:var(--R)"></div>Погибшие ×10 →</div>
-      <div class="li"><div class="dot" style="background:rgba(45,125,210,.3)"></div>Запусков (нараст.) ←</div>
+      <div class="li"><div class="dot" style="background:var(--A)"></div><span data-t="leg_injured">Раненые →</span></div>
+      <div class="li"><div class="dot" style="background:var(--R)"></div><span data-t="leg_killed">Погибшие ×10 →</span></div>
+      <div class="li"><div class="dot" style="background:rgba(45,125,210,.3)"></div><span data-t="leg_cum">Запусков (нараст.) ←</span></div>
     </div>
     <div class="ch" style="height:180px"><canvas id="c2"></canvas></div>
   </div>
@@ -174,41 +190,41 @@ html,body{background:var(--bg);color:var(--txt);font-family:-apple-system,'SF Pr
 <div class="panel" id="p1">
 
   <div class="g2">
-    <div class="stat"><div class="sl">ОАЭ / млн</div><div class="sv" style="color:var(--G)">1,13</div><div class="ss">33 дня войны</div></div>
-    <div class="stat"><div class="sl">Москва / млн</div><div class="sv" style="color:var(--G)">&lt;0,8</div><div class="ss">2 года атак</div></div>
-    <div class="stat"><div class="sl">Украина 2025</div><div class="sv" style="color:var(--R)">66</div><div class="ss">/ млн / год</div></div>
-    <div class="stat"><div class="sl">Запуск / гиб.</div><div class="sv" style="color:var(--G)">235</div><div class="ss">исторический рекорд</div></div>
+    <div class="stat"><div class="sl" data-t="uae_pm">ОАЭ / млн</div><div class="sv" style="color:var(--G)">1,13</div><div class="ss" data-t="ss_dayswar">33 дня войны</div></div>
+    <div class="stat"><div class="sl" data-t="moscow_pm">Москва / млн</div><div class="sv" style="color:var(--G)">&lt;0,8</div><div class="ss" data-t="ss_2yr">2 года атак</div></div>
+    <div class="stat"><div class="sl" data-t="ukr_2025">Украина 2025</div><div class="sv" style="color:var(--R)">66</div><div class="ss" data-t="ss_pmyr">/ млн / год</div></div>
+    <div class="stat"><div class="sl" data-t="launches_pk">Запуск / гиб.</div><div class="sv" style="color:var(--G)">235</div><div class="ss" data-t="ss_record">исторический рекорд</div></div>
   </div>
 
   <div class="card">
-    <div class="ct">Погибших на 1 млн жителей (лог. шкала)</div>
+    <div class="ct" data-t="ct_pm">Погибших на 1 млн жителей (лог. шкала)</div>
     <div class="ch" style="height:195px"><canvas id="c3"></canvas></div>
-    <div class="note">Логарифмическая шкала — иначе ОАЭ/Москва визуально неотличимы от нуля на фоне Украины и Лондонского блица.</div>
+    <div class="note" data-t="note_log">Логарифмическая шкала — иначе ОАЭ/Москва визуально неотличимы от нуля на фоне Украины и Лондонского блица.</div>
   </div>
 
   <div class="card">
-    <div class="ct">Запусков на 1 погибшего (↑ = эффективнее ПВО)</div>
+    <div class="ct" data-t="ct_lpk">Запусков на 1 погибшего (↑ = эффективнее ПВО)</div>
     <div class="ch" style="height:150px"><canvas id="c4"></canvas></div>
   </div>
 
   <div class="card">
-    <div class="ct">% перехвата по типам угроз</div>
+    <div class="ct" data-t="ct_int">% перехвата по типам угроз</div>
     <div class="ch" style="height:150px"><canvas id="c5"></canvas></div>
-    <div class="note">Ключевое отличие: у Украины баллистические ракеты перехватываются лишь на 18% (Iskander/Kinzhal). У ОАЭ — 97% (THAAD + PAC-3).</div>
+    <div class="note" data-t="note_int">Ключевое отличие: у Украины баллистические ракеты перехватываются лишь на 18% (Iskander/Kinzhal). У ОАЭ — 97% (THAAD + PAC-3).</div>
   </div>
 
   <div class="card">
-    <div class="ct">Сводная таблица</div>
+    <div class="ct" data-t="ct_table">Сводная таблица</div>
     <table class="tbl">
-      <thead><tr><th>Театр</th><th>Период</th><th>Запусков</th><th>/1 млн</th><th>Оценка</th></tr></thead>
+      <thead><tr><th data-t="th_theatre">Театр</th><th data-t="th_period">Период</th><th data-t="th_launches">Запусков</th><th data-t="th_pm">/1 млн</th><th data-t="th_rating">Оценка</th></tr></thead>
       <tbody>
-        <tr><td><b>ОАЭ 2026</b></td><td>33 дня</td><td>2 582</td><td style="color:var(--G)"><b>1,13</b></td><td><span class="pill pg">Исключит.</span></td></tr>
-        <tr><td>Москва 24–25</td><td>2 года</td><td>~500</td><td style="color:var(--G)"><b>&lt;0,8</b></td><td><span class="pill pg">Сильно</span></td></tr>
-        <tr><td>Киев 2024</td><td>год</td><td>~1 550</td><td style="color:var(--A)"><b>11,9</b></td><td><span class="pill pg">Сильно</span></td></tr>
-        <tr><td>Россия 2025</td><td>год</td><td>~3 700</td><td style="color:var(--A)"><b>2,8</b></td><td><span class="pill pa">Умеренно</span></td></tr>
-        <tr><td>Украина 2025</td><td>год</td><td>~67 000</td><td style="color:var(--R)"><b>66</b></td><td><span class="pill pr">Давление</span></td></tr>
-        <tr><td>Израиль 7окт23</td><td>1 день</td><td>~4 000</td><td style="color:var(--R)"><b>126</b></td><td><span class="pill pr">Катастрофа</span></td></tr>
-        <tr><td>Лондон Блиц</td><td>год</td><td>>70 000</td><td style="color:var(--R)"><b>3 488</b></td><td><span class="pill pr">Катастрофа</span></td></tr>
+        <tr><td><b data-t="td_uae">ОАЭ 2026</b></td><td data-t="td_33d">33 дня</td><td>2 582</td><td style="color:var(--G)"><b>1,13</b></td><td><span class="pill pg" data-t="pill_exc">Исключит.</span></td></tr>
+        <tr><td data-t="td_moscow">Москва 24–25</td><td data-t="td_2yr">2 года</td><td>~500</td><td style="color:var(--G)"><b>&lt;0,8</b></td><td><span class="pill pg" data-t="pill_strong">Сильно</span></td></tr>
+        <tr><td data-t="td_kyiv">Киев 2024</td><td data-t="td_yr">год</td><td>~1 550</td><td style="color:var(--A)"><b>11,9</b></td><td><span class="pill pg" data-t="pill_strong2">Сильно</span></td></tr>
+        <tr><td data-t="td_russia">Россия 2025</td><td data-t="td_yr2">год</td><td>~3 700</td><td style="color:var(--A)"><b>2,8</b></td><td><span class="pill pa" data-t="pill_mod">Умеренно</span></td></tr>
+        <tr><td data-t="td_ukraine">Украина 2025</td><td data-t="td_yr3">год</td><td>~67 000</td><td style="color:var(--R)"><b>66</b></td><td><span class="pill pr" data-t="pill_press">Давление</span></td></tr>
+        <tr><td data-t="td_israel">Израиль 7окт23</td><td data-t="td_1day">1 день</td><td>~4 000</td><td style="color:var(--R)"><b>126</b></td><td><span class="pill pr" data-t="pill_cat">Катастрофа</span></td></tr>
+        <tr><td data-t="td_london">Лондон Блиц</td><td data-t="td_yr4">год</td><td>>70 000</td><td style="color:var(--R)"><b>3 488</b></td><td><span class="pill pr" data-t="pill_cat2">Катастрофа</span></td></tr>
       </tbody>
     </table>
   </div>
@@ -221,79 +237,77 @@ html,body{background:var(--bg);color:var(--txt);font-family:-apple-system,'SF Pr
   <!-- DEADLINE BANNER -->
   <div class="deadline">
     <div class="dl-top">
-      <div class="dl-label">⏳ Дедлайн Трампа</div>
-      <div><div class="dl-days">5</div><div class="dl-caption">дней до 6 апр</div></div>
+      <div class="dl-label" data-t="dl_label">⏳ Дедлайн Трампа</div>
+      <div><div class="dl-days">5</div><div class="dl-caption" data-t="dl_caption">дней до 6 апр</div></div>
     </div>
-    <div class="dl-body">Трамп отложил удары по энергетике Ирана до <b>6 апреля (воскресенье)</b>. США передали 15-пунктный план через Пакистан. Иран отрицает прямые переговоры, но передал свои условия (репарации + Ормуз). Если сделки не будет — новая эскалация и риск ответных ударов по ОАЭ.</div>
+    <div class="dl-body" data-t-html="dl_body">Трамп отложил удары по энергетике Ирана до <b>6 апреля (воскресенье)</b>. США передали 15-пунктный план через Пакистан. Иран отрицает прямые переговоры, но передал свои условия (репарации + Ормуз). Если сделки не будет — новая эскалация и риск ответных ударов по ОАЭ.</div>
   </div>
 
   <div class="trend">
-    <div class="trend-t">Тренды · 1 апреля 2026</div>
-    <div class="trend-b">
-      <b>Объём снижается, точность растёт.</b> Пик — 362 цели/день в нед. 1 (28 фев). Сейчас — 15–50/день. Но 31 мар: +4 крылатые ракеты за день (было 15 за весь месяц), удар по танкеру в порту Дубая — сигнал о диверсификации арсенала.<br><br>
+    <div class="trend-t" data-t="trend_t">Тренды · 1 апреля 2026</div>
+    <div class="trend-b" data-t-html="trend_body"><b>Объём снижается, точность растёт.</b> Пик — 362 цели/день в нед. 1 (28 фев). Сейчас — 15–50/день. Но 31 мар: +4 крылатые ракеты за день (было 15 за весь месяц), удар по танкеру в порту Дубая — сигнал о диверсификации арсенала.<br><br>
       <b>Настроения экспатов: полярные.</b> Лонгтаймеры остаются — «доверяем руководству, дом здесь» (Khaleej Times). Часть уехала в марте — пустые квартиры, брошенные питомцы. Техлидеры: «шум есть, структурного ущерба экосистеме нет». ЦБ ОАЭ — пакет 270 млрд $ для ликвидности.<br><br>
-      <b>ОАЭ рассматривают ответный удар.</b> Axios: UAE обдумывает активные оборонительные меры — unprecedented. Пока официальный курс — дипломатия + жёсткое ПВО.
-    </div>
+      <b>ОАЭ рассматривают ответный удар.</b> Axios: UAE обдумывает активные оборонительные меры — unprecedented. Пока официальный курс — дипломатия + жёсткое ПВО.</div>
   </div>
 
   <div class="news">
-    <div class="ntag tr">🏫 Kritichno · G12</div>
+    <div class="ntag tr" data-t="tag_school">🏫 Kritichno · G12</div>
     <div class="ntit">International Baccalaureate Exams Scrapped in UAE Amid Iran War - Bloomberg.com</div>
     <div class="nmeta">Tue, 31 Mar 2026 12:25:35 GMT · Bloomberg.com</div>
   </div>
 
   <div class="news">
-    <div class="ntag tr">🏫 Kritichno · G12</div>
+    <div class="ntag tr" data-t="tag_school2">🏫 Kritichno · G12</div>
     <div class="ntit">IB exams cancelled as remote learning extended in UAE - thenationalnews.com</div>
     <div class="nmeta">Tue, 31 Mar 2026 17:21:29 GMT · thenationalnews.com</div>
   </div>
 
   <div class="news">
-    <div class="ntag ta">🏛️ Переговоры</div>
+    <div class="ntag ta" data-t="tag_talks">🏛️ Переговоры</div>
     <div class="ntit">Trump grants Iran another extension on a deadline to reopen the Strait of Hormuz - NPR</div>
     <div class="nmeta">Thu, 26 Mar 2026 09:44:35 GMT · NPR</div>
   </div>
 
   <div class="news">
-    <div class="ntag ta">🏛️ Переговоры</div>
+    <div class="ntag ta" data-t="tag_talks2">🏛️ Переговоры</div>
     <div class="ntit">Iran says nuclear facilities have been attacked after Israel says attacks 'will escalate and expand' - PBS</div>
     <div class="nmeta">Fri, 27 Mar 2026 14:07:36 GMT · PBS</div>
   </div>
 
   <div class="news">
-    <div class="ntag ta">🚢 Новая тактика</div>
+    <div class="ntag ta" data-t="tag_tactics">🚢 Новая тактика</div>
     <div class="ntit">Iran War Maps: Tracking the Mideast Conflict - The New York Times</div>
     <div class="nmeta">Mon, 30 Mar 2026 07:00:00 GMT · The New York Times</div>
   </div>
 
   <div class="news">
-    <div class="ntag ta">🚢 Новая тактика</div>
-    <div class="ntit">Iran Isn’t ‘Flailing’ — It’s Executing a Coercive Risk Strategy - Stimson Center</div>
+    <div class="ntag ta" data-t="tag_tactics2">🚢 Новая тактика</div>
+    <div class="ntit">Iran Isn't 'Flailing' — It's Executing a Coercive Risk Strategy - Stimson Center</div>
     <div class="nmeta">Fri, 13 Mar 2026 07:00:00 GMT · Stimson Center</div>
   </div>
 
   <div class="news">
-    <div class="ntag ta">🏛️ Бизнес-риск</div>
-    <div class="ntit">Iranian expats say UAE canceled their residency visas, leaving many stranded | Iran International - ایران اینترنشنال</div>
-    <div class="nmeta">Sat, 28 Mar 2026 18:57:35 GMT · ایران اینترنشنال</div>
+    <div class="ntag ta" data-t="tag_biz">🏛️ Бизнес-риск</div>
+    <div class="ntit">Iranian expats say UAE canceled their residency visas, leaving many stranded | Iran International</div>
+    <div class="nmeta">Sat, 28 Mar 2026 18:57:35 GMT · Iran International</div>
   </div>
 
   <div class="news">
-    <div class="ntag ta">🏛️ Бизнес-риск</div>
+    <div class="ntag ta" data-t="tag_biz2">🏛️ Бизнес-риск</div>
     <div class="ntit">Unconfirmed reports of mass cancellation of Iranian residence and Golden Visas - VisaHQ</div>
     <div class="nmeta">Sat, 28 Mar 2026 23:03:52 GMT · VisaHQ</div>
   </div>
 
   <div class="news">
-    <div class="ntag tb">✈️ Авиация</div>
+    <div class="ntag tb" data-t="tag_avia">✈️ Авиация</div>
     <div class="ntit">Is Dubai International Airport Open on March 30? Drone Fire Causes Morning Suspension at DXB - TravelPirates</div>
     <div class="nmeta">Mon, 30 Mar 2026 13:00:34 GMT · TravelPirates</div>
   </div>
 
   <div class="news">
-    <div class="ntag tb">✈️ Авиация</div>
-    <div class="ntit">Dubai and Middle East flight disruption: the latest updates as US-Israel-Iran war continues to impact travel - Condé Nast Traveller Middle East</div>
-    <div class="nmeta">Mon, 30 Mar 2026 06:50:55 GMT · Condé Nast Traveller Middle East</div>
+    <div class="ntag tb" data-t="tag_avia2">✈️ Авиация</div>
+    <div class="ntit">Dubai and Middle East flight disruption: the latest updates as US-Israel-Iran war continues to impact travel</div>
+    <div class="nmeta">Mon, 30 Mar 2026 06:50:55 GMT · Conde Nast Traveller ME</div>
   </div></div><!-- /p2 -->
 
 <script>
@@ -302,14 +316,7 @@ if(window.Telegram&&window.Telegram.WebApp){
   Telegram.WebApp.expand();
 }
 
-(function(){
-  var now=new Date();
-  var hh=String(now.getHours()).padStart(2,'0');
-  var mm=String(now.getMinutes()).padStart(2,'0');
-  var el=document.getElementById('upd-time');
-  if(el) el.textContent='обн. '+hh+':'+mm;
-})();
-
+/* ── DATA ── */
 var DAYS=['28ф','1м','2м','3м','4м','5м','6м','7м','8м','9м','10м','11м','12м','13м','14м','15м','16м','17м','18м','19м','20м','21м','22м','23м','24м','25м','26м','27м','28м','29м','30м','31м','1апр*'];
 var DR=[209,311,148,123,129,100,109,100,113,100,35,39,26,27,33,6,21,45,27,15,26,8,25,16,17,9,11,9,37,42,27,36,136];
 var BM=[137,20,28,11,9,5,9,7,16,12,9,6,10,7,9,4,6,10,13,7,4,3,4,7,5,4,15,6,20,16,11,8,16];
@@ -323,11 +330,224 @@ var gc='rgba(255,255,255,.07)';
 var B='#2d7dd2',G='#1fa06a',A='#c47c0a',R='#d63a3a';
 var N=DAYS.length;
 
+/* ── TRANSLATIONS ── */
+var T={
+ru:{
+  title:'ПВО ОАЭ · Иранские удары 2026',badge:'День',upd:'обн.',
+  tab0:'📊 Цифры МО',tab1:'🌍 Театры',tab2:'📰 Тренды',
+  launches:'Запусков',ballistic:'Баллист.',drones:'Дронов',intercept:'Перехват',killed:'Погибших',injured:'Раненых',
+  ss_days:'33 дня',ss_cruise:'+13 крыл.',ss_cumul:'нараст.',ss_civmil:'8 гражд. + 3 воен.',ss_nat:'29 нац-тей',
+  ct_daily:'Ежедневные запуски по типам',ct_weekly:'Итог по неделям',ct_casualties:'Нарастающие жертвы + объём атак',
+  leg_drones:'Дроны',leg_ballistic:'Баллист.',leg_cruise:'Крылатые',
+  leg_injured:'Раненые →',leg_killed:'Погибшие ×10 →',leg_cum:'Запусков (нараст.) ←',
+  note_daily:'31 мар — закрыт официально. 1 апр — сводка МО не вышла. Крылатые ракеты: скачок с 15 до 19 за один день 31 мар.',
+  uae_pm:'ОАЭ / млн',moscow_pm:'Москва / млн',ukr_2025:'Украина 2025',launches_pk:'Запуск / гиб.',
+  ss_dayswar:'33 дня войны',ss_2yr:'2 года атак',ss_pmyr:'/ млн / год',ss_record:'исторический рекорд',
+  ct_pm:'Погибших на 1 млн жителей (лог. шкала)',ct_lpk:'Запусков на 1 погибшего (↑ = эффективнее ПВО)',
+  ct_int:'% перехвата по типам угроз',ct_table:'Сводная таблица',
+  note_log:'Логарифмическая шкала — иначе ОАЭ/Москва визуально неотличимы от нуля на фоне Украины и Лондонского блица.',
+  note_int:'Ключевое отличие: у Украины баллистические ракеты перехватываются лишь на 18% (Iskander/Kinzhal). У ОАЭ — 97% (THAAD + PAC-3).',
+  th_theatre:'Театр',th_period:'Период',th_launches:'Запусков',th_pm:'/1 млн',th_rating:'Оценка',
+  td_uae:'ОАЭ 2026',td_33d:'33 дня',td_moscow:'Москва 24–25',td_2yr:'2 года',td_kyiv:'Киев 2024',
+  td_yr:'год',td_yr2:'год',td_yr3:'год',td_yr4:'год',td_russia:'Россия 2025',td_ukraine:'Украина 2025',
+  td_israel:'Израиль 7окт23',td_1day:'1 день',td_london:'Лондон Блиц',
+  pill_exc:'Исключит.',pill_strong:'Сильно',pill_strong2:'Сильно',pill_mod:'Умеренно',pill_press:'Давление',pill_cat:'Катастрофа',pill_cat2:'Катастрофа',
+  dl_label:'⏳ Дедлайн Трампа',dl_caption:'дней до 6 апр',
+  dl_body:'Трамп отложил удары по энергетике Ирана до <b>6 апреля (воскресенье)</b>. США передали 15-пунктный план через Пакистан. Иран отрицает прямые переговоры, но передал свои условия (репарации + Ормуз). Если сделки не будет — новая эскалация и риск ответных ударов по ОАЭ.',
+  trend_t:'Тренды · 1 апреля 2026',
+  trend_body:'<b>Объём снижается, точность растёт.</b> Пик — 362 цели/день в нед. 1 (28 фев). Сейчас — 15–50/день. Но 31 мар: +4 крылатые ракеты за день (было 15 за весь месяц), удар по танкеру в порту Дубая — сигнал о диверсификации арсенала.<br><br><b>Настроения экспатов: полярные.</b> Лонгтаймеры остаются — «доверяем руководству, дом здесь» (Khaleej Times). Часть уехала в марте — пустые квартиры, брошенные питомцы. Техлидеры: «шум есть, структурного ущерба экосистеме нет». ЦБ ОАЭ — пакет 270 млрд $ для ликвидности.<br><br><b>ОАЭ рассматривают ответный удар.</b> Axios: UAE обдумывает активные оборонительные меры — unprecedented. Пока официальный курс — дипломатия + жёсткое ПВО.',
+  tag_school:'🏫 Критично · G12',tag_school2:'🏫 Критично · G12',
+  tag_talks:'🏛️ Переговоры',tag_talks2:'🏛️ Переговоры',
+  tag_tactics:'🚢 Новая тактика',tag_tactics2:'🚢 Новая тактика',
+  tag_biz:'🏛️ Бизнес-риск',tag_biz2:'🏛️ Бизнес-риск',
+  tag_avia:'✈️ Авиация',tag_avia2:'✈️ Авиация',
+  c3L:['ОАЭ\n2026','Москва\n24–25','Россия\n2025','Киев\n2024','Израиль\n2026','Украина\n2025','Лондон\nБлиц'],
+  c4L:['ОАЭ','Москва','Киев','Украина','Россия'],
+  c5L:['ОАЭ\nдроны','ОАЭ\nбаллист.','Киев\nдроны','Укр.\nдроны','Укр.\nбаллист.','Москва\nдроны'],
+  c3tip:'погиб./млн жит.',c4tip:'запусков/погибший',c5tip:'% перехвачено'
+},
+en:{
+  title:'UAE Air Defence · Iranian Strikes 2026',badge:'Day',upd:'upd.',
+  tab0:'📊 MOD Data',tab1:'🌍 Comparison',tab2:'📰 Trends',
+  launches:'Launches',ballistic:'Ballistic',drones:'Drones',intercept:'Intercept',killed:'Killed',injured:'Injured',
+  ss_days:'33 days',ss_cruise:'+13 cruise',ss_cumul:'cumulative',ss_civmil:'8 civ. + 3 mil.',ss_nat:'29 nationalities',
+  ct_daily:'Daily launches by type',ct_weekly:'Weekly totals',ct_casualties:'Cumulative casualties + attack volume',
+  leg_drones:'Drones',leg_ballistic:'Ballistic',leg_cruise:'Cruise',
+  leg_injured:'Injured →',leg_killed:'Killed ×10 →',leg_cum:'Launches (cum.) ←',
+  note_daily:'Mar 31 — officially closed. Apr 1 — MOD briefing not issued. Cruise missiles: spike from 15 to 19 in one day on Mar 31.',
+  uae_pm:'UAE / mln',moscow_pm:'Moscow / mln',ukr_2025:'Ukraine 2025',launches_pk:'Launch / death',
+  ss_dayswar:'33 days of war',ss_2yr:'2 years of attacks',ss_pmyr:'/ mln / year',ss_record:'historic record',
+  ct_pm:'Killed per 1M residents (log scale)',ct_lpk:'Launches per 1 killed (↑ = better AD)',
+  ct_int:'Intercept % by threat type',ct_table:'Summary table',
+  note_log:'Logarithmic scale — otherwise UAE/Moscow are visually indistinguishable from zero against Ukraine and the London Blitz.',
+  note_int:'Key difference: Ukraine intercepts ballistic missiles at only 18% (Iskander/Kinzhal). UAE — 97% (THAAD + PAC-3).',
+  th_theatre:'Theatre',th_period:'Period',th_launches:'Launches',th_pm:'/1 mln',th_rating:'Rating',
+  td_uae:'UAE 2026',td_33d:'33 days',td_moscow:'Moscow 24–25',td_2yr:'2 years',td_kyiv:'Kyiv 2024',
+  td_yr:'year',td_yr2:'year',td_yr3:'year',td_yr4:'year',td_russia:'Russia 2025',td_ukraine:'Ukraine 2025',
+  td_israel:'Israel 7Oct23',td_1day:'1 day',td_london:'London Blitz',
+  pill_exc:'Exceptional',pill_strong:'Strong',pill_strong2:'Strong',pill_mod:'Moderate',pill_press:'Pressure',pill_cat:'Catastrophe',pill_cat2:'Catastrophe',
+  dl_label:'⏳ Trump Deadline',dl_caption:'days to Apr 6',
+  dl_body:'Trump postponed strikes on Iran\'s energy sector until <b>April 6 (Sunday)</b>. The US delivered a 15-point plan via Pakistan. Iran denies direct talks but submitted its own terms (reparations + Hormuz). If no deal — further escalation and risk of retaliatory strikes on UAE.',
+  trend_t:'Trends · April 1, 2026',
+  trend_body:'<b>Volume declining, precision rising.</b> Peak — 362 targets/day in week 1 (Feb 28). Now — 15–50/day. But Mar 31: +4 cruise missiles in one day (was 15 for entire month), tanker hit in Dubai Port — signal of arsenal diversification.<br><br><b>Expat sentiment: polarized.</b> Long-timers staying — "we trust leadership, this is home" (Khaleej Times). Some left in March — empty apartments, abandoned pets. Tech leaders: "noise yes, structural damage to ecosystem no." UAE Central Bank — $270B liquidity package.<br><br><b>UAE considering retaliatory strike.</b> Axios: UAE weighing active defensive measures — unprecedented. Official line remains diplomacy + robust air defence.',
+  tag_school:'🏫 Critical · G12',tag_school2:'🏫 Critical · G12',
+  tag_talks:'🏛️ Negotiations',tag_talks2:'🏛️ Negotiations',
+  tag_tactics:'🚢 New Tactics',tag_tactics2:'🚢 New Tactics',
+  tag_biz:'🏛️ Business Risk',tag_biz2:'🏛️ Business Risk',
+  tag_avia:'✈️ Aviation',tag_avia2:'✈️ Aviation',
+  c3L:['UAE\n2026','Moscow\n24–25','Russia\n2025','Kyiv\n2024','Israel\n2026','Ukraine\n2025','London\nBlitz'],
+  c4L:['UAE','Moscow','Kyiv','Ukraine','Russia'],
+  c5L:['UAE\ndrones','UAE\nballistic','Kyiv\ndrones','Ukr.\ndrones','Ukr.\nballistic','Moscow\ndrones'],
+  c3tip:'killed/mln pop.',c4tip:'launches/killed',c5tip:'% intercepted'
+},
+ar:{
+  title:'الدفاع الجوي الإماراتي · الضربات الإيرانية 2026',badge:'يوم',upd:'تحديث',
+  tab0:'📊 بيانات الدفاع',tab1:'🌍 مقارنة',tab2:'📰 اتجاهات',
+  launches:'إطلاقات',ballistic:'باليستية',drones:'مسيّرات',intercept:'اعتراض',killed:'قتلى',injured:'جرحى',
+  ss_days:'33 يوم',ss_cruise:'+13 جوالة',ss_cumul:'تراكمي',ss_civmil:'8 مدني + 3 عسكري',ss_nat:'29 جنسية',
+  ct_daily:'الإطلاقات اليومية حسب النوع',ct_weekly:'الإجمالي الأسبوعي',ct_casualties:'الإصابات التراكمية + حجم الهجمات',
+  leg_drones:'مسيّرات',leg_ballistic:'باليستية',leg_cruise:'جوالة',
+  leg_injured:'جرحى →',leg_killed:'قتلى ×10 →',leg_cum:'إطلاقات (تراكمي) ←',
+  note_daily:'31 مارس — أُغلق رسمياً. 1 أبريل — لم تصدر نشرة وزارة الدفاع. صواريخ جوالة: قفزة من 15 إلى 19 في يوم واحد 31 مارس.',
+  uae_pm:'الإمارات / مليون',moscow_pm:'موسكو / مليون',ukr_2025:'أوكرانيا 2025',launches_pk:'إطلاق / وفاة',
+  ss_dayswar:'33 يوم حرب',ss_2yr:'سنتان من الهجمات',ss_pmyr:'/ مليون / سنة',ss_record:'رقم قياسي تاريخي',
+  ct_pm:'قتلى لكل مليون نسمة (مقياس لوغاريتمي)',ct_lpk:'إطلاقات لكل قتيل (↑ = دفاع جوي أفضل)',
+  ct_int:'نسبة الاعتراض حسب نوع التهديد',ct_table:'جدول ملخص',
+  note_log:'مقياس لوغاريتمي — وإلا فإن الإمارات/موسكو لا يمكن تمييزهما بصرياً عن الصفر مقابل أوكرانيا وغارة لندن.',
+  note_int:'الفرق الرئيسي: أوكرانيا تعترض الصواريخ الباليستية بنسبة 18% فقط (إسكندر/كينجال). الإمارات — 97% (ثاد + باتريوت).',
+  th_theatre:'المسرح',th_period:'الفترة',th_launches:'إطلاقات',th_pm:'/1 مليون',th_rating:'تقييم',
+  td_uae:'الإمارات 2026',td_33d:'33 يوم',td_moscow:'موسكو 24–25',td_2yr:'سنتان',td_kyiv:'كييف 2024',
+  td_yr:'سنة',td_yr2:'سنة',td_yr3:'سنة',td_yr4:'سنة',td_russia:'روسيا 2025',td_ukraine:'أوكرانيا 2025',
+  td_israel:'إسرائيل 7أكتوبر23',td_1day:'يوم واحد',td_london:'غارة لندن',
+  pill_exc:'استثنائي',pill_strong:'قوي',pill_strong2:'قوي',pill_mod:'معتدل',pill_press:'ضغط',pill_cat:'كارثة',pill_cat2:'كارثة',
+  dl_label:'⏳ مهلة ترامب',dl_caption:'أيام حتى 6 أبريل',
+  dl_body:'أجّل ترامب ضربات قطاع الطاقة الإيراني حتى <b>6 أبريل (الأحد)</b>. سلّمت أمريكا خطة من 15 بنداً عبر باكستان. إيران تنفي المفاوضات المباشرة لكنها قدّمت شروطها (تعويضات + هرمز). إذا لم يتم الاتفاق — تصعيد جديد وخطر ضربات انتقامية على الإمارات.',
+  trend_t:'اتجاهات · 1 أبريل 2026',
+  trend_body:'<b>الحجم يتراجع، الدقة تزداد.</b> الذروة — 362 هدف/يوم في الأسبوع 1 (28 فبراير). الآن — 15–50/يوم. لكن 31 مارس: +4 صواريخ جوالة في يوم (كان 15 طوال الشهر)، ضربة ناقلة في ميناء دبي — إشارة لتنويع الترسانة.<br><br><b>مشاعر المغتربين: متباينة.</b> المقيمون منذ فترة طويلة باقون — "نثق بالقيادة، هذا بيتنا" (خليج تايمز). بعضهم غادر في مارس. قادة التكنولوجيا: "ضجيج نعم، ضرر هيكلي لا". البنك المركزي — حزمة 270 مليار $ للسيولة.<br><br><b>الإمارات تدرس رداً.</b> أكسيوس: الإمارات تدرس إجراءات دفاعية نشطة — غير مسبوق. الخط الرسمي يظل الدبلوماسية + دفاع جوي صارم.',
+  tag_school:'🏫 حرج · G12',tag_school2:'🏫 حرج · G12',
+  tag_talks:'🏛️ مفاوضات',tag_talks2:'🏛️ مفاوضات',
+  tag_tactics:'🚢 تكتيك جديد',tag_tactics2:'🚢 تكتيك جديد',
+  tag_biz:'🏛️ مخاطر أعمال',tag_biz2:'🏛️ مخاطر أعمال',
+  tag_avia:'✈️ طيران',tag_avia2:'✈️ طيران',
+  c3L:['الإمارات\n2026','موسكو\n24–25','روسيا\n2025','كييف\n2024','إسرائيل\n2026','أوكرانيا\n2025','لندن\nالغارة'],
+  c4L:['الإمارات','موسكو','كييف','أوكرانيا','روسيا'],
+  c5L:['الإمارات\nمسيّرات','الإمارات\nباليستية','كييف\nمسيّرات','أوكرانيا\nمسيّرات','أوكرانيا\nباليستية','موسكو\nمسيّرات'],
+  c3tip:'قتلى/مليون نسمة',c4tip:'إطلاق/قتيل',c5tip:'% اعتراض'
+},
+fr:{
+  title:'Defense aerienne EAU · Frappes iraniennes 2026',badge:'Jour',upd:'maj.',
+  tab0:'📊 Donnees MDN',tab1:'🌍 Comparaison',tab2:'📰 Tendances',
+  launches:'Lancements',ballistic:'Balistiques',drones:'Drones',intercept:'Interception',killed:'Tues',injured:'Blesses',
+  ss_days:'33 jours',ss_cruise:'+13 croisiere',ss_cumul:'cumulatif',ss_civmil:'8 civ. + 3 mil.',ss_nat:'29 nationalites',
+  ct_daily:'Lancements quotidiens par type',ct_weekly:'Totaux hebdomadaires',ct_casualties:'Victimes cumulees + volume d\'attaques',
+  leg_drones:'Drones',leg_ballistic:'Balistiques',leg_cruise:'Croisiere',
+  leg_injured:'Blesses →',leg_killed:'Tues ×10 →',leg_cum:'Lancements (cum.) ←',
+  note_daily:'31 mars — ferme officiellement. 1 avr — briefing MDN non publie. Missiles de croisiere : bond de 15 a 19 en un jour le 31 mars.',
+  uae_pm:'EAU / mln',moscow_pm:'Moscou / mln',ukr_2025:'Ukraine 2025',launches_pk:'Lanc. / mort',
+  ss_dayswar:'33 jours de guerre',ss_2yr:'2 ans d\'attaques',ss_pmyr:'/ mln / an',ss_record:'record historique',
+  ct_pm:'Tues par 1M d\'habitants (echelle log)',ct_lpk:'Lancements par tue (↑ = meilleure DA)',
+  ct_int:'% d\'interception par type de menace',ct_table:'Tableau recapitulatif',
+  note_log:'Echelle logarithmique — sinon EAU/Moscou sont visuellement indistinguibles de zero face a l\'Ukraine et au Blitz de Londres.',
+  note_int:'Difference cle : l\'Ukraine n\'intercepte que 18% des missiles balistiques (Iskander/Kinzhal). EAU — 97% (THAAD + PAC-3).',
+  th_theatre:'Theatre',th_period:'Periode',th_launches:'Lancements',th_pm:'/1 mln',th_rating:'Note',
+  td_uae:'EAU 2026',td_33d:'33 jours',td_moscow:'Moscou 24–25',td_2yr:'2 ans',td_kyiv:'Kiev 2024',
+  td_yr:'an',td_yr2:'an',td_yr3:'an',td_yr4:'an',td_russia:'Russie 2025',td_ukraine:'Ukraine 2025',
+  td_israel:'Israel 7oct23',td_1day:'1 jour',td_london:'Londres Blitz',
+  pill_exc:'Exceptionnel',pill_strong:'Fort',pill_strong2:'Fort',pill_mod:'Modere',pill_press:'Pression',pill_cat:'Catastrophe',pill_cat2:'Catastrophe',
+  dl_label:'⏳ Date limite Trump',dl_caption:'jours avant le 6 avr',
+  dl_body:'Trump a reporte les frappes sur le secteur energetique iranien au <b>6 avril (dimanche)</b>. Les USA ont transmis un plan en 15 points via le Pakistan. L\'Iran nie les pourparlers directs mais a soumis ses conditions (reparations + Hormuz). Sans accord — nouvelle escalade et risque de frappes de represailles sur les EAU.',
+  trend_t:'Tendances · 1 avril 2026',
+  trend_body:'<b>Volume en baisse, precision en hausse.</b> Pic — 362 cibles/jour en sem. 1 (28 fev). Maintenant — 15–50/jour. Mais le 31 mars : +4 missiles de croisiere en un jour (15 pour tout le mois), frappe sur un petrolier au port de Dubai — signal de diversification de l\'arsenal.<br><br><b>Sentiment des expatries : polarise.</b> Les residents de longue date restent — « nous faisons confiance a la direction, c\'est chez nous » (Khaleej Times). Certains sont partis en mars. Leaders tech : « du bruit oui, des degats structurels non ». Banque centrale — paquet de 270 Mds $ pour la liquidite.<br><br><b>Les EAU envisagent une riposte.</b> Axios : les EAU pesent des mesures defensives actives — sans precedent. La ligne officielle reste la diplomatie + defense aerienne robuste.',
+  tag_school:'🏫 Critique · G12',tag_school2:'🏫 Critique · G12',
+  tag_talks:'🏛️ Negociations',tag_talks2:'🏛️ Negociations',
+  tag_tactics:'🚢 Nouvelle tactique',tag_tactics2:'🚢 Nouvelle tactique',
+  tag_biz:'🏛️ Risque business',tag_biz2:'🏛️ Risque business',
+  tag_avia:'✈️ Aviation',tag_avia2:'✈️ Aviation',
+  c3L:['EAU\n2026','Moscou\n24–25','Russie\n2025','Kiev\n2024','Israel\n2026','Ukraine\n2025','Londres\nBlitz'],
+  c4L:['EAU','Moscou','Kiev','Ukraine','Russie'],
+  c5L:['EAU\ndrones','EAU\nbalist.','Kiev\ndrones','Ukr.\ndrones','Ukr.\nbalist.','Moscou\ndrones'],
+  c3tip:'tues/mln hab.',c4tip:'lancements/tue',c5tip:'% intercepte'
+},
+it:{
+  title:'Difesa aerea EAU · Attacchi iraniani 2026',badge:'Giorno',upd:'agg.',
+  tab0:'📊 Dati MOD',tab1:'🌍 Confronto',tab2:'📰 Tendenze',
+  launches:'Lanci',ballistic:'Balistici',drones:'Droni',intercept:'Intercettazione',killed:'Uccisi',injured:'Feriti',
+  ss_days:'33 giorni',ss_cruise:'+13 crociera',ss_cumul:'cumulativo',ss_civmil:'8 civ. + 3 mil.',ss_nat:'29 nazionalita',
+  ct_daily:'Lanci giornalieri per tipo',ct_weekly:'Totali settimanali',ct_casualties:'Vittime cumulative + volume attacchi',
+  leg_drones:'Droni',leg_ballistic:'Balistici',leg_cruise:'Crociera',
+  leg_injured:'Feriti →',leg_killed:'Uccisi ×10 →',leg_cum:'Lanci (cum.) ←',
+  note_daily:'31 mar — chiuso ufficialmente. 1 apr — briefing MOD non emesso. Missili da crociera: balzo da 15 a 19 in un giorno il 31 mar.',
+  uae_pm:'EAU / mln',moscow_pm:'Mosca / mln',ukr_2025:'Ucraina 2025',launches_pk:'Lancio / morte',
+  ss_dayswar:'33 giorni di guerra',ss_2yr:'2 anni di attacchi',ss_pmyr:'/ mln / anno',ss_record:'record storico',
+  ct_pm:'Uccisi per 1M di abitanti (scala log)',ct_lpk:'Lanci per 1 ucciso (↑ = difesa migliore)',
+  ct_int:'% intercettazione per tipo di minaccia',ct_table:'Tabella riepilogativa',
+  note_log:'Scala logaritmica — altrimenti EAU/Mosca sono visivamente indistinguibili dallo zero rispetto all\'Ucraina e al Blitz di Londra.',
+  note_int:'Differenza chiave: l\'Ucraina intercetta solo il 18% dei missili balistici (Iskander/Kinzhal). EAU — 97% (THAAD + PAC-3).',
+  th_theatre:'Teatro',th_period:'Periodo',th_launches:'Lanci',th_pm:'/1 mln',th_rating:'Valutazione',
+  td_uae:'EAU 2026',td_33d:'33 giorni',td_moscow:'Mosca 24–25',td_2yr:'2 anni',td_kyiv:'Kiev 2024',
+  td_yr:'anno',td_yr2:'anno',td_yr3:'anno',td_yr4:'anno',td_russia:'Russia 2025',td_ukraine:'Ucraina 2025',
+  td_israel:'Israele 7ott23',td_1day:'1 giorno',td_london:'Londra Blitz',
+  pill_exc:'Eccezionale',pill_strong:'Forte',pill_strong2:'Forte',pill_mod:'Moderato',pill_press:'Pressione',pill_cat:'Catastrofe',pill_cat2:'Catastrofe',
+  dl_label:'⏳ Scadenza Trump',dl_caption:'giorni al 6 apr',
+  dl_body:'Trump ha rinviato gli attacchi al settore energetico iraniano al <b>6 aprile (domenica)</b>. Gli USA hanno consegnato un piano in 15 punti tramite il Pakistan. L\'Iran nega colloqui diretti ma ha presentato le sue condizioni (riparazioni + Hormuz). Senza accordo — ulteriore escalation e rischio di attacchi di ritorsione sugli EAU.',
+  trend_t:'Tendenze · 1 aprile 2026',
+  trend_body:'<b>Volume in calo, precisione in aumento.</b> Picco — 362 obiettivi/giorno nella sett. 1 (28 feb). Ora — 15–50/giorno. Ma il 31 mar: +4 missili da crociera in un giorno (15 per l\'intero mese), colpita petroliera nel porto di Dubai — segnale di diversificazione dell\'arsenale.<br><br><b>Sentimento degli espatriati: polarizzato.</b> I residenti di lunga data restano — "ci fidiamo della leadership, questa e casa nostra" (Khaleej Times). Alcuni sono partiti a marzo. Leader tech: "rumore si, danni strutturali no". Banca centrale — pacchetto da 270 Mld $ per la liquidita.<br><br><b>Gli EAU valutano un contrattacco.</b> Axios: gli EAU stanno valutando misure difensive attive — senza precedenti. La linea ufficiale resta diplomazia + difesa aerea robusta.',
+  tag_school:'🏫 Critico · G12',tag_school2:'🏫 Critico · G12',
+  tag_talks:'🏛️ Negoziati',tag_talks2:'🏛️ Negoziati',
+  tag_tactics:'🚢 Nuova tattica',tag_tactics2:'🚢 Nuova tattica',
+  tag_biz:'🏛️ Rischio business',tag_biz2:'🏛️ Rischio business',
+  tag_avia:'✈️ Aviazione',tag_avia2:'✈️ Aviazione',
+  c3L:['EAU\n2026','Mosca\n24–25','Russia\n2025','Kiev\n2024','Israele\n2026','Ucraina\n2025','Londra\nBlitz'],
+  c4L:['EAU','Mosca','Kiev','Ucraina','Russia'],
+  c5L:['EAU\ndroni','EAU\nbalist.','Kiev\ndroni','Ucr.\ndroni','Ucr.\nbalist.','Mosca\ndroni'],
+  c3tip:'uccisi/mln ab.',c4tip:'lanci/ucciso',c5tip:'% intercettato'
+}
+};
+
+var curLang='ru';
+
+function setLang(lang){
+  curLang=lang;
+  var d=T[lang];
+  if(!d)return;
+  /* text nodes */
+  document.querySelectorAll('[data-t]').forEach(function(el){
+    var k=el.getAttribute('data-t');
+    if(d[k]!=null) el.textContent=d[k];
+  });
+  /* html nodes */
+  document.querySelectorAll('[data-t-html]').forEach(function(el){
+    var k=el.getAttribute('data-t-html');
+    if(d[k]!=null) el.innerHTML=d[k];
+  });
+  /* lang buttons */
+  document.querySelectorAll('.lng').forEach(function(b){b.classList.remove('on');});
+  document.querySelectorAll('.lng').forEach(function(b){
+    if(b.textContent.trim().toLowerCase()===lang || (lang==='ar' && b.textContent.trim()==='ع'))
+      b.classList.add('on');
+  });
+  /* RTL for Arabic */
+  document.body.dir=lang==='ar'?'rtl':'ltr';
+  /* update time label */
+  var now=new Date();
+  var hh=String(now.getHours()).padStart(2,'0');
+  var mm=String(now.getMinutes()).padStart(2,'0');
+  var el=document.getElementById('upd-time');
+  if(el) el.textContent=d.upd+' '+hh+':'+mm;
+  /* chart labels */
+  if(ch3){ch3.data.labels=d.c3L;ch3.options.plugins.tooltip.callbacks.label=function(c){return c.raw+' '+d.c3tip;};ch3.update();}
+  if(ch4){ch4.data.labels=d.c4L;ch4.options.plugins.tooltip.callbacks.label=function(c){return c.raw+' '+d.c4tip;};ch4.update();}
+  if(ch5){ch5.data.labels=d.c5L;ch5.options.plugins.tooltip.callbacks.label=function(c){return c.raw+d.c5tip;};ch5.update();}
+  try{localStorage.setItem('gulf_lang',lang);}catch(e){}
+}
+
+/* ── CHART HELPERS ── */
 function xax(){return{ticks:{color:tc,font:{size:9},autoSkip:true,maxTicksLimit:10,maxRotation:0},grid:{color:gc},border:{color:'transparent'}};}
 function yax(mx){var o={ticks:{color:tc,font:{size:9}},grid:{color:gc},border:{color:'transparent'},min:0};if(mx)o.max=mx;return o;}
 function lax(){return{type:'logarithmic',ticks:{color:tc,font:{size:9},callback:function(v){return[0.1,1,10,100,1000,10000].indexOf(v)>-1?v:'';}},grid:{color:gc},border:{color:'transparent'},min:0.1};}
 function bgA(c1,c2,n){var a=[];for(var i=0;i<n;i++)a.push(i>=31?c2:c1);return a;}
 
+/* ── CHARTS ── */
 // c0 — stacked bar daily
 new Chart(document.getElementById('c0'),{type:'bar',
   data:{labels:DAYS,datasets:[
@@ -362,18 +582,18 @@ new Chart(document.getElementById('c2'),{
       y2:{ticks:{color:tc,font:{size:9}},grid:{display:false},border:{color:'transparent'},min:0,position:'right'}}}
 });
 
-// c3 — per million log
+// c3 — per million log (store reference)
 var cmpL=['ОАЭ\n2026','Москва\n24–25','Россия\n2025','Киев\n2024','Израиль\n2026','Украина\n2025','Лондон\nБлиц'];
 var cmpV=[1.13,0.8,2.8,11.9,1.82,65.7,3488];
 var cmpC=[G,G+'88',A,A+'88',G+'77',R,R+'77'];
-new Chart(document.getElementById('c3'),{type:'bar',
+var ch3=new Chart(document.getElementById('c3'),{type:'bar',
   data:{labels:cmpL,datasets:[{data:cmpV,backgroundColor:cmpC,borderRadius:4}]},
   options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.raw+' погиб./млн жит.';} }}},
     scales:{x:{ticks:{color:tc,font:{size:9},maxRotation:0,autoSkip:false},grid:{color:gc},border:{color:'transparent'}},y:lax()}}
 });
 
 // c4 — launches per killed
-new Chart(document.getElementById('c4'),{type:'bar',
+var ch4=new Chart(document.getElementById('c4'),{type:'bar',
   data:{labels:['ОАЭ','Москва','Киев','Украина','Россия'],
     datasets:[{data:[235,50,44,26.7,9.3],backgroundColor:[G,G+'88',A,R+'88',A+'88'],borderRadius:4}]},
   options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.raw+' запусков/погибший';}}}},
@@ -381,7 +601,7 @@ new Chart(document.getElementById('c4'),{type:'bar',
 });
 
 // c5 — intercept %
-new Chart(document.getElementById('c5'),{type:'bar',
+var ch5=new Chart(document.getElementById('c5'),{type:'bar',
   data:{labels:['ОАЭ\nдроны','ОАЭ\nбаллист.','Киев\nдроны','Укр.\nдроны','Укр.\nбаллист.','Москва\nдроны'],
     datasets:[{data:[95,97,95,85,18,93],backgroundColor:[G,G+'ee',A,A+'88',R,A+'77'],borderRadius:4}]},
   options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.raw+'% перехвачено';}}}},
@@ -389,11 +609,26 @@ new Chart(document.getElementById('c5'),{type:'bar',
       y:Object.assign({},yax(100),{ticks:{color:tc,font:{size:9},callback:function(v){return v+'%';}}})}}
 });
 
+/* ── TAB SWITCHER ── */
 function sw(i){
   document.querySelectorAll('.tab').forEach(function(t,j){t.classList.toggle('on',j===i);});
   document.querySelectorAll('.panel').forEach(function(p,j){p.classList.toggle('on',j===i);});
   window.scrollTo({top:0,behavior:'smooth'});
 }
+
+/* ── INIT LANGUAGE ── */
+(function(){
+  var saved;
+  try{saved=localStorage.getItem('gulf_lang');}catch(e){}
+  if(saved && T[saved]){setLang(saved);}
+  else{
+    var now=new Date();
+    var hh=String(now.getHours()).padStart(2,'0');
+    var mm=String(now.getMinutes()).padStart(2,'0');
+    var el=document.getElementById('upd-time');
+    if(el) el.textContent='обн. '+hh+':'+mm;
+  }
+})();
 </script>
 </body>
 </html>
