@@ -340,8 +340,7 @@ new Chart(document.getElementById('c0'),{type:'bar',
 });
 
 // c1 — weekly
-var wL=['нед1','нед2','нед3','нед4','нед5
-29–33'];
+var wL=['нед1','нед2','нед3','нед4','нед5 29–33'];
 var wD=[TOT.slice(0,7),TOT.slice(7,14),TOT.slice(14,21),TOT.slice(21,28),TOT.slice(28,32)].map(function(a){return a.reduce(function(s,v){return s+v;},0);});
 new Chart(document.getElementById('c1'),{type:'bar',
   data:{labels:wL,datasets:[{data:wD,backgroundColor:[R,A,B,G,A+'99'],borderRadius:5}]},

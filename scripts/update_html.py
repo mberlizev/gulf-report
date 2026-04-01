@@ -340,11 +340,11 @@ def update_weekly_labels(html, num_days):
             start_day = (w - 1) * 7 + 1
             end_day = num_days
             if start_day == end_day:
-                labels.append("'\u043d\u0435\u0434%d\\n%d'" % (w, end_day))
+                labels.append("'нед%d %d'" % (w, end_day))
             else:
-                labels.append("'\u043d\u0435\u0434%d\\n%d\u2013%d'" % (w, start_day, end_day))
+                labels.append("'нед%d %d–%d'" % (w, start_day, end_day))
         else:
-            labels.append("'\u043d\u0435\u0434%d'" % w)
+            labels.append("'нед%d'" % w)
 
     labels_str = ",".join(labels)
     pattern = r"(var\s+wL\s*=\s*\[)[^\]]*(\])"
