@@ -423,11 +423,11 @@ def scrape_news_items():
     Returns list of news dicts.
     """
     news_queries = [
-        ("school", "UAE schools IB exams distance learning 2026"),
-        ("ceasefire", "Iran UAE ceasefire negotiations Trump deadline 2026"),
-        ("tactics", "UAE drone missile new tactic attack escalation 2026"),
-        ("visa", "UAE Iran visa cancellation residence 2026"),
-        ("aviation", "Dubai airport DXB flights operational closure 2026"),
+        ("school", "UAE schools exams distance learning schedule 2026"),
+        ("economy", "UAE economy business prices cost of living 2026"),
+        ("visa", "UAE visa residence permit rules update 2026"),
+        ("aviation", "Dubai Abu Dhabi airport flights status open 2026"),
+        ("daily", "UAE daily life safety shelters civil defence advisory 2026"),
     ]
 
     all_news = []

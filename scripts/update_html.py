@@ -71,11 +71,11 @@ MONTHS_RU_FULL = {
 
 # News category -> tag class and label (per recipe Section 4)
 NEWS_CATEGORIES = {
-    "school": {"tag_class": "tr", "label": "Kritichno \u00b7 G12", "icon": "\U0001f3eb"},
-    "ceasefire": {"tag_class": "ta", "label": "\u041f\u0435\u0440\u0435\u0433\u043e\u0432\u043e\u0440\u044b", "icon": "\U0001f3db\ufe0f"},
-    "tactics": {"tag_class": "ta", "label": "\u041d\u043e\u0432\u0430\u044f \u0442\u0430\u043a\u0442\u0438\u043a\u0430", "icon": "\U0001f6a2"},
-    "visa": {"tag_class": "ta", "label": "\u0411\u0438\u0437\u043d\u0435\u0441-\u0440\u0438\u0441\u043a", "icon": "\U0001f3db\ufe0f"},
+    "school": {"tag_class": "tr", "label": "\u0428\u043a\u043e\u043b\u044b", "icon": "\U0001f3eb"},
+    "economy": {"tag_class": "ta", "label": "\u042d\u043a\u043e\u043d\u043e\u043c\u0438\u043a\u0430", "icon": "\U0001f4b0"},
+    "visa": {"tag_class": "ta", "label": "\u0412\u0438\u0437\u044b", "icon": "\U0001f4cb"},
     "aviation": {"tag_class": "tb", "label": "\u0410\u0432\u0438\u0430\u0446\u0438\u044f", "icon": "\u2708\ufe0f"},
+    "daily": {"tag_class": "ta", "label": "\u0411\u044b\u0442 \u0438 \u0431\u0435\u0437\u043e\u043f\u0430\u0441\u043d\u043e\u0441\u0442\u044c", "icon": "\U0001f3e0"},
 }
 
 
