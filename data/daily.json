@@ -1,13 +1,12 @@
 {
   "meta": {
-    "last_updated": "2026-04-03T00:00:00Z",
+    "last_updated": "2026-04-02T21:57:06.539241Z",
     "last_date": "2026-04-02",
     "num_days": 34,
-    "total_launches": 2430,
-    "total_dr": 1979,
-    "total_bm": 438,
->>>>>>> 3d4288a (fix: add dynamic outlier detection to scraper, reset bad Apr 1 data)
-    "total_cm": 13,
+    "total_launches": 2500,
+    "total_dr": 2014,
+    "total_bm": 454,
+    "total_cm": 32,
     "killed": 11,
     "injured": 188
   },
@@ -237,15 +236,15 @@
       "ci": 188
     },
     "2026-04-01": {
-      "dr": 0,
+      "dr": 35,
       "bm": 0,
-      "cm": 0,
+      "cm": 19,
       "ck": 11,
       "ci": 188
     },
     "2026-04-02": {
       "dr": 0,
-      "bm": 0,
+      "bm": 16,
       "cm": 0,
       "ck": 11,
       "ci": 188
