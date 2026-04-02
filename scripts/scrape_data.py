@@ -75,6 +75,10 @@ RE_KILLED = re.compile(r'(\d+)\s*(?:killed|dead|deaths?|fatalities)', re.IGNOREC
 RE_INJURED = re.compile(r'(\d+)\s*(?:injured|wounded|hurt)', re.IGNORECASE)
 RE_INTERCEPTED = re.compile(r'(?:intercepted|shot\s*down|destroyed)\s*(\d+)', re.IGNORECASE)
 RE_TOTAL_LAUNCHES = re.compile(r'(\d+)\s*(?:projectiles?|launches?|targets?|objects?)', re.IGNORECASE)
+RE_CUMULATIVE_CONTEXT = re.compile(
+    r'(?:total|cumulative|since|overall|to\s+date|so\s+far|all\s+told|combined|more\s+than)',
+    re.IGNORECASE
+)
 
 RE_DATE_HEADER = re.compile(
     r'(\d{1,2})\s*(January|February|March|April|May|June|July|August|'
@@ -137,30 +141,51 @@ def search_news(query, max_results=10):
     return results
 
 
+def _filter_cumulative_matches(pattern, text):
+    """
+    Return only regex match values whose surrounding context (±80 chars)
+    does NOT contain cumulative keywords like 'total', 'since', 'overall'.
+    Falls back to all matches if every match is filtered out.
+    """
+    all_vals = []
+    daily_vals = []
+    for m in pattern.finditer(text):
+        val = int(m.group(1))
+        all_vals.append(val)
+        start = max(0, m.start() - 80)
+        end = min(len(text), m.end() + 80)
+        window = text[start:end]
+        if not RE_CUMULATIVE_CONTEXT.search(window):
+            daily_vals.append(val)
+    return daily_vals if daily_vals else all_vals
+
+
 def extract_daily_figures_from_text(text):
     """
     Extract BM, DR, CM counts from a text block (MOD statement or article).
     Returns dict with keys: dr, bm, cm (or None if not found).
+
+    Strategy: filter out numbers that appear near cumulative keywords,
+    then take the MEDIAN of remaining matches (more robust than max,
+    which often grabs weekly/cumulative totals).
     """
     figures = {"dr": None, "bm": None, "cm": None}
 
-    dr_matches = RE_DRONES.findall(text)
-    bm_matches = RE_BALLISTIC.findall(text)
-    cm_matches = RE_CRUISE.findall(text)
+    dr_vals = _filter_cumulative_matches(RE_DRONES, text)
+    bm_vals = _filter_cumulative_matches(RE_BALLISTIC, text)
+    cm_vals = _filter_cumulative_matches(RE_CRUISE, text)
 
-    # Take the largest number found for each type (usually the daily total)
-    if dr_matches:
-        val = max(int(x) for x in dr_matches)
-        if val < 500:  # sanity: daily drones should be < 500
-            figures["dr"] = val
-    if bm_matches:
-        val = max(int(x) for x in bm_matches)
-        if val < 200:  # sanity: daily ballistic should be < 200
-            figures["bm"] = val
-    if cm_matches:
-        val = max(int(x) for x in cm_matches)
-        if val < 100:  # sanity: daily cruise should be < 100
-            figures["cm"] = val
+    def pick(vals, hard_cap):
+        if not vals:
+            return None
+        vals = sorted(vals)
+        # Use median — less sensitive to outlier cumulative mentions
+        median = vals[len(vals) // 2]
+        return median if median < hard_cap else None
+
+    figures["dr"] = pick(dr_vals, 500)
+    figures["bm"] = pick(bm_vals, 200)
+    figures["cm"] = pick(cm_vals, 100)
 
     return figures
 
@@ -471,12 +496,47 @@ def load_existing_data():
     return {"meta": {}, "days": {}}
 
 
+def _rolling_avg(days_dict, date_str, key, window=7):
+    """
+    Compute rolling average for `key` over the last `window` days before `date_str`.
+    Returns the average, or None if fewer than 3 prior data points exist.
+    """
+    sorted_dates = sorted(d for d in days_dict if d < date_str)
+    recent = sorted_dates[-window:]
+    vals = [days_dict[d].get(key, 0) for d in recent]
+    if len(vals) < 3:
+        return None
+    return sum(vals) / len(vals)
+
+
+def _is_outlier(days_dict, date_str, key, value, multiplier=4.0):
+    """
+    Returns True if `value` is suspiciously high compared to the rolling average.
+    Uses a multiplier threshold (default 4x) with a minimum floor so that
+    real spikes at low averages aren't wrongly rejected.
+    """
+    avg = _rolling_avg(days_dict, date_str, key)
+    if avg is None:
+        return False  # not enough history to judge
+    floor = max(avg * multiplier, 20)  # never reject values below 20
+    if value > floor:
+        log.warning(
+            "OUTLIER detected: %s %s=%d vs 7d-avg=%.1f (threshold=%.0f)",
+            date_str, key, value, avg, floor
+        )
+        return True
+    return False
+
+
 def merge_data(existing, scraped, trust_existing_launches=False):
     """
     Merge scraped data into existing data.
 
     If trust_existing_launches=True, never overwrite DR/BM/CM for days that
     already exist (the HTML baseline is authoritative for launch counts).
+
+    Dynamic outlier detection: new values are checked against a 7-day rolling
+    average. Values exceeding 4x the average are flagged and skipped.
     """
     merged = dict(existing)
 
@@ -489,19 +549,28 @@ def merge_data(existing, scraped, trust_existing_launches=False):
         )
 
         if date not in merged or is_placeholder:
-            # Sanity-check: daily values shouldn't be suspiciously high
-            if vals.get("dr", 0) > 500 or vals.get("bm", 0) > 200:
-                log.warning("Skipping suspicious day %s: DR=%s BM=%s (likely cumulative)",
-                            date, vals.get("dr"), vals.get("bm"))
+            # Dynamic sanity-check per field against recent trend
+            filtered_vals = dict(vals)
+            for key in ("dr", "bm", "cm"):
+                v = filtered_vals.get(key, 0)
+                if v and _is_outlier(merged, date, key, v):
+                    log.warning("Dropping outlier %s=%d for %s", key, v, date)
+                    filtered_vals[key] = 0
+
+            # Hard caps still apply as last resort
+            if filtered_vals.get("dr", 0) > 500 or filtered_vals.get("bm", 0) > 200:
+                log.warning("Skipping suspicious day %s: DR=%s BM=%s (hard cap)",
+                            date, filtered_vals.get("dr"), filtered_vals.get("bm"))
                 continue
+
             if is_placeholder:
-                merged[date].update(vals)
+                merged[date].update(filtered_vals)
                 log.info("FILLED placeholder: %s -- DR:%s BM:%s CM:%s",
-                         date, vals.get("dr"), vals.get("bm"), vals.get("cm"))
+                         date, filtered_vals.get("dr"), filtered_vals.get("bm"), filtered_vals.get("cm"))
             else:
-                merged[date] = vals
+                merged[date] = filtered_vals
                 log.info("NEW day: %s -- DR:%s BM:%s CM:%s",
-                         date, vals.get("dr"), vals.get("bm"), vals.get("cm"))
+                         date, filtered_vals.get("dr"), filtered_vals.get("bm"), filtered_vals.get("cm"))
         else:
             old = merged[date]
             updated = False
@@ -509,8 +578,11 @@ def merge_data(existing, scraped, trust_existing_launches=False):
             if not trust_existing_launches:
                 for key in ("dr", "bm", "cm"):
                     if vals.get(key) and vals[key] > old.get(key, 0):
+                        if _is_outlier(merged, date, key, vals[key]):
+                            log.warning("Dropping outlier update %s=%d for %s", key, vals[key], date)
+                            continue
                         if (key == "dr" and vals[key] > 500) or (key == "bm" and vals[key] > 200):
-                            log.warning("Skipping suspicious %s=%s for %s", key, vals[key], date)
+                            log.warning("Skipping suspicious %s=%s for %s (hard cap)", key, vals[key], date)
                             continue
                         old[key] = vals[key]
                         updated = True
