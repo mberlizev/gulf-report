@@ -73,6 +73,7 @@ MONTHS_RU_FULL = {
 NEWS_CATEGORIES = {
     "school": {"tag_class": "tr", "label": "\u0428\u043a\u043e\u043b\u044b", "icon": "\U0001f3eb"},
     "economy": {"tag_class": "ta", "label": "\u042d\u043a\u043e\u043d\u043e\u043c\u0438\u043a\u0430", "icon": "\U0001f4b0"},
+    "tactics": {"tag_class": "ta", "label": "\u0421\u0438\u0442\u0443\u0430\u0446\u0438\u044f", "icon": "\U0001f6a2"},
     "visa": {"tag_class": "ta", "label": "\u0412\u0438\u0437\u044b", "icon": "\U0001f4cb"},
     "aviation": {"tag_class": "tb", "label": "\u0410\u0432\u0438\u0430\u0446\u0438\u044f", "icon": "\u2708\ufe0f"},
     "daily": {"tag_class": "ta", "label": "\u0411\u044b\u0442 \u0438 \u0431\u0435\u0437\u043e\u043f\u0430\u0441\u043d\u043e\u0441\u0442\u044c", "icon": "\U0001f3e0"},

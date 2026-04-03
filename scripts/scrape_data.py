@@ -425,6 +425,7 @@ def scrape_news_items():
     news_queries = [
         ("school", "UAE schools exams distance learning schedule 2026"),
         ("economy", "UAE economy business prices cost of living 2026"),
+        ("tactics", "Iran UAE new weapons tactics escalation de-escalation 2026"),
         ("visa", "UAE visa residence permit rules update 2026"),
         ("aviation", "Dubai Abu Dhabi airport flights status open 2026"),
         ("daily", "UAE daily life safety shelters civil defence advisory 2026"),
