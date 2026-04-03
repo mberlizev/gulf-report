@@ -416,11 +416,44 @@ def parse_wikipedia():
     return daily_data
 
 
+def _title_words(title):
+    """Normalize title to a set of lowercase significant words (3+ chars)."""
+    words = re.sub(r'[^\w\s]', '', title.lower()).split()
+    stop = {'the', 'and', 'for', 'are', 'was', 'has', 'have', 'been', 'will',
+            'with', 'that', 'this', 'from', 'says', 'said', 'new', 'its'}
+    return {w for w in words if len(w) >= 3 and w not in stop}
+
+
+def _is_duplicate(title, existing_titles, threshold=0.55):
+    """Check if title is too similar to any already-accepted title."""
+    words = _title_words(title)
+    if not words:
+        return True
+    for prev in existing_titles:
+        prev_words = _title_words(prev)
+        if not prev_words:
+            continue
+        overlap = len(words & prev_words) / min(len(words), len(prev_words))
+        if overlap >= threshold:
+            log.info("Dedup: '%s' too similar to '%s' (%.0f%%)",
+                     title[:50], prev[:50], overlap * 100)
+            return True
+    return False
+
+
+# Headlines with these patterns add no practical value — skip them
+RE_CLICKBAIT = re.compile(
+    r'(?:shocking|horrifying|terrifying|you\s+won.t\s+believe|nightmare|'
+    r'apocalypse|doomsday|flee\s+now|panic|mass\s+exodus|devastating blow|'
+    r'world\s+war\s+3|ww3|armageddon)',
+    re.IGNORECASE
+)
+
+
 def scrape_news_items():
     """
     Recipe Step 7: Search for latest news for the Trends tab.
-    Categories: school/IB, ceasefire, new tactics, visa, aviation.
-    Returns list of news dicts.
+    Practical categories for families in UAE. No duplicates, no clickbait.
     """
     news_queries = [
         ("school", "UAE schools exams distance learning schedule 2026"),
@@ -432,19 +465,36 @@ def scrape_news_items():
     ]
 
     all_news = []
+    accepted_titles = []
 
     for category, query in news_queries:
-        articles = search_news(query, max_results=3)
-        for article in articles[:2]:  # Top 2 per category
+        articles = search_news(query, max_results=5)
+        added = 0
+        for article in articles:
+            if added >= 2:
+                break
+            title = article.get("title", "").strip()
+            if not title:
+                continue
+            # Skip clickbait / fear-mongering
+            if RE_CLICKBAIT.search(title):
+                log.info("Filtered clickbait: %s", title[:60])
+                continue
+            # Skip near-duplicates across all categories
+            if _is_duplicate(title, accepted_titles):
+                continue
             all_news.append({
                 "category": category,
-                "title": article.get("title", ""),
+                "title": title,
                 "source": article.get("source", ""),
                 "link": article.get("link", ""),
                 "date": article.get("date", ""),
             })
+            accepted_titles.append(title)
+            added += 1
 
-    log.info("News: collected %d items across %d categories", len(all_news), len(news_queries))
+    log.info("News: accepted %d items (dedup+filter) across %d categories",
+             len(all_news), len(news_queries))
     return all_news
 
 
