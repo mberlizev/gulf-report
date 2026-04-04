@@ -270,20 +270,34 @@ def build_news_html(news_items):
         title = item.get("title", "").replace("<", "&lt;").replace(">", "&gt;")
         source = item.get("source", "").replace("<", "&lt;").replace(">", "&gt;")
         date = item.get("date", "").replace("<", "&lt;").replace(">", "&gt;")
+        summary = item.get("summary", "").replace("<", "&lt;").replace(">", "&gt;")
+        analysis = item.get("analysis", "").replace("<", "&lt;").replace(">", "&gt;")
 
         if not title:
             continue
+
+        # Build body: Rashid's summary + analysis (if available)
+        body_parts = []
+        if summary:
+            body_parts.append(summary)
+        if analysis:
+            body_parts.append(analysis)
+        body_html = ""
+        if body_parts:
+            body_html = '    <div class="nbod">%s</div>\n' % " ".join(body_parts)
 
         block = (
             '<div class="news">\n'
             '    <div class="ntag %s">%s %s</div>\n'
             '    <div class="ntit">%s</div>\n'
+            '%s'
             '    <div class="nmeta">%s%s</div>\n'
             '  </div>' % (
                 cat_info["tag_class"],
                 cat_info["icon"],
                 cat_info["label"],
                 title,
+                body_html,
                 date,
                 (" \u00b7 " + source) if source else "",
             )

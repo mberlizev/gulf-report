@@ -32,6 +32,7 @@ jobs:
         run: python scripts/scrape_data.py
         env:
           PYTHONUNBUFFERED: '1'
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         # scrape_data.py fails gracefully per source; only returns 1 if zero data total
         continue-on-error: false
 

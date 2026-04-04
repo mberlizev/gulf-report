@@ -20,6 +20,7 @@ Rashid's principle: fail gracefully. If a source is down, log it and continue.
 """
 
 import json
+import os
 import re
 import sys
 import logging
@@ -33,6 +34,12 @@ try:
 except ImportError:
     print("ERROR: Install dependencies: pip install requests beautifulsoup4 lxml")
     sys.exit(1)
+
+try:
+    import anthropic
+    HAS_ANTHROPIC = True
+except ImportError:
+    HAS_ANTHROPIC = False
 
 logging.basicConfig(
     level=logging.INFO,
@@ -512,6 +519,105 @@ def scrape_news_items():
     return all_news
 
 
+def rashid_analyze_news(raw_news, daily_data):
+    """
+    Rashid's AI layer: takes raw news items and returns enriched news
+    with simple summaries and political analysis.
+
+    Each item gets:
+      - summary: 1-2 sentence plain-language explanation for families
+      - analysis: what this means politically / practically
+    """
+    if not HAS_ANTHROPIC:
+        log.warning("anthropic not installed — skipping Rashid analysis")
+        return raw_news
+
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        log.warning("ANTHROPIC_API_KEY not set — skipping Rashid analysis")
+        return raw_news
+
+    # Build context about current situation from daily_data
+    sorted_dates = sorted(daily_data.keys())
+    last_date = sorted_dates[-1] if sorted_dates else "unknown"
+    last_day = daily_data.get(last_date, {})
+    total_days = len(sorted_dates)
+    total_launches = sum(daily_data[d].get("dr", 0) + daily_data[d].get("bm", 0) + daily_data[d].get("cm", 0) for d in sorted_dates)
+
+    situation_context = (
+        "Day %d of Iran-UAE conflict. Last date: %s. "
+        "Total launches: %d. Latest casualties: %d killed, %d injured. "
+        "Key context: Trump April 6 deadline on Iran (Strait of Hormuz), "
+        "IB exams cancelled, schools on distance learning."
+    ) % (
+        total_days, last_date, total_launches,
+        last_day.get("ck", 0), last_day.get("ci", 0)
+    )
+
+    news_block = "\n".join(
+        "%d. [%s] %s (source: %s, date: %s)" % (
+            i + 1, item.get("category", ""), item.get("title", ""),
+            item.get("source", ""), item.get("date", "")
+        )
+        for i, item in enumerate(raw_news)
+    )
+
+    prompt = """You are Rashid, a data analyst for a UAE family dashboard during the Iran-UAE conflict.
+
+SITUATION: %s
+
+RAW NEWS HEADLINES:
+%s
+
+For each headline, provide:
+1. "summary" — 1-2 sentences in simple Russian. No jargon, no panic. Written for families living in UAE who need practical info.
+2. "analysis" — 1 sentence: what this means politically or practically. Be direct.
+
+IMPORTANT:
+- Write in Russian
+- Be calm and factual, no emotional language
+- Focus on what matters for everyday life: schools, flights, safety, money
+- If a headline is irrelevant noise, set summary to empty string ""
+
+Return ONLY valid JSON array (no markdown), same order as input:
+[{"index": 0, "summary": "...", "analysis": "..."}, ...]""" % (situation_context, news_block)
+
+    try:
+        client = anthropic.Anthropic(api_key=api_key)
+        response = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=2000,
+            messages=[{"role": "user", "content": prompt}]
+        )
+        text = response.content[0].text.strip()
+        # Parse JSON from response (handle potential markdown wrapping)
+        if text.startswith("```"):
+            text = re.sub(r'^```(?:json)?\s*', '', text)
+            text = re.sub(r'\s*```$', '', text)
+        analyzed = json.loads(text)
+
+        # Merge back into raw_news
+        for item in analyzed:
+            idx = item.get("index", -1)
+            if 0 <= idx < len(raw_news):
+                summary = item.get("summary", "").strip()
+                if summary:
+                    raw_news[idx]["summary"] = summary
+                    raw_news[idx]["analysis"] = item.get("analysis", "").strip()
+                else:
+                    # Rashid says this headline is noise — remove it
+                    raw_news[idx]["_skip"] = True
+
+        # Filter out noise
+        raw_news = [n for n in raw_news if not n.get("_skip")]
+        log.info("Rashid analysis: enriched %d news items", len(raw_news))
+
+    except Exception as e:
+        log.warning("Rashid analysis failed: %s — using raw headlines", e)
+
+    return raw_news
+
+
 def extract_existing_from_html():
     """
     Extract current data arrays from HTML as authoritative baseline.
@@ -751,6 +857,9 @@ def main():
 
     # Step 7: Scrape news for Trends tab
     news_items = scrape_news_items()
+
+    # Step 7b: Rashid analyzes and simplifies news
+    news_items = rashid_analyze_news(news_items, merged)
 
     # Compute summary
     sorted_dates = sorted(merged.keys())
