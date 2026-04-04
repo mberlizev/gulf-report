@@ -212,20 +212,36 @@ def extract_casualties_from_text(text):
 def scrape_mod_statement_from_search(target_date):
     """
     Recipe Step 1: Search for UAE MOD statement for a specific date.
-    Query: UAE MOD missiles drones [date] intercepted
-    Returns figures dict or empty dict.
+    Strategy:
+      1. First try to extract numbers from RSS headlines (fast, reliable)
+      2. Fall back to fetching full article content
     """
     date_str = target_date.strftime("%B %d %Y")
+    month_year = target_date.strftime("%B %Y")
     queries = [
+        "UAE intercepts missiles drones %s" % date_str,
+        "UAE air defence intercepted drones ballistic %s" % month_year,
         'UAE MOD "%s" missiles drones intercepted' % date_str,
-        "UAE air defence today %s casualties latest" % target_date.strftime("%B %Y"),
         "UAE ministry defense %s intercepted drones ballistic" % date_str,
     ]
 
     for query in queries:
         articles = search_news(query)
+
+        # Pass 1: Try headlines — many RSS titles contain exact figures
         for article in articles:
-            # Try to fetch the article content
+            title = article.get("title", "")
+            figures = extract_daily_figures_from_text(title)
+            if figures["dr"] is not None or figures["bm"] is not None:
+                log.info("MOD headline hit: %s (source: %s)", title[:60], article.get("source", ""))
+                return {
+                    "dr": figures["dr"] or 0,
+                    "bm": figures["bm"] or 0,
+                    "cm": figures["cm"] or 0,
+                }
+
+        # Pass 2: Fetch full article content
+        for article in articles:
             if not article.get("link"):
                 continue
 
@@ -234,7 +250,6 @@ def scrape_mod_statement_from_search(target_date):
                 continue
 
             soup = BeautifulSoup(html, "html.parser")
-            # Remove scripts, styles, nav
             for tag in soup.find_all(["script", "style", "nav", "header", "footer"]):
                 tag.decompose()
 
@@ -242,9 +257,8 @@ def scrape_mod_statement_from_search(target_date):
             figures = extract_daily_figures_from_text(text)
             casualties = extract_casualties_from_text(text)
 
-            # Need at least drones or ballistic to consider valid
             if figures["dr"] is not None or figures["bm"] is not None:
-                log.info("MOD search hit: %s (source: %s)", article["title"][:60], article["source"])
+                log.info("MOD article hit: %s (source: %s)", article["title"][:60], article.get("source", ""))
                 result = {
                     "dr": figures["dr"] or 0,
                     "bm": figures["bm"] or 0,
