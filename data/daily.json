@@ -1,14 +1,14 @@
 {
   "meta": {
-    "last_updated": "2026-04-04T17:52:17.125377Z",
+    "last_updated": "2026-04-04T18:00:00Z",
     "last_date": "2026-04-04",
     "num_days": 36,
-    "total_launches": 2643,
-    "total_dr": 2113,
-    "total_bm": 494,
+    "total_launches": 2677,
+    "total_dr": 2143,
+    "total_bm": 498,
     "total_cm": 36,
-    "killed": 11,
-    "injured": 188
+    "killed": 13,
+    "injured": 217
   },
   "days": {
     "2026-02-28": {
@@ -253,15 +253,15 @@
       "dr": 47,
       "bm": 18,
       "cm": 4,
-      "ck": 11,
+      "ck": 12,
       "ci": 188
     },
     "2026-04-04": {
-      "dr": 26,
-      "bm": 19,
+      "dr": 56,
+      "bm": 23,
       "cm": 0,
-      "ck": 11,
-      "ci": 188
+      "ck": 13,
+      "ci": 217
     }
   }
 }
