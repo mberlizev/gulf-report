@@ -19,8 +19,11 @@ dp = Dispatcher()
 claude = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 
 WEBAPP_URL = "https://mberlizev.github.io/gulf-report/uae_telegram.html"
+DAILY_JSON_URL = "https://raw.githubusercontent.com/mberlizev/gulf-report/main/data/daily.json"
+NEWS_JSON_URL = "https://raw.githubusercontent.com/mberlizev/gulf-report/main/data/news.json"
 CLAUDE_CLI = "/Users/mikhailberlizev/.local/bin/claude"
 WORK_DIR = str(Path.home() / "Desktop" / "Claude_Fabric")
+REPORT_HOUR_UTC = 7  # send daily report at 07:00 UTC (11:00 Dubai)
 
 dashboard_kb = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(
@@ -239,6 +242,136 @@ async def cmd_dashboard(message: types.Message):
     )
 
 
+def build_dashboard_report(daily_data, news_data):
+    """
+    Rashid's dashboard report: concise summary of situation for Telegram.
+    """
+    meta = daily_data.get("meta", {})
+    days = daily_data.get("days", {})
+    sorted_dates = sorted(days.keys())
+
+    num_days = meta.get("num_days", len(sorted_dates))
+    total = meta.get("total_launches", 0)
+    total_dr = meta.get("total_dr", 0)
+    total_bm = meta.get("total_bm", 0)
+    total_cm = meta.get("total_cm", 0)
+    killed = meta.get("killed", 0)
+    injured = meta.get("injured", 0)
+    last_date = meta.get("last_date", "?")
+
+    # Today's figures
+    today = sorted_dates[-1] if sorted_dates else None
+    today_data = days.get(today, {}) if today else {}
+    today_dr = today_data.get("dr", 0)
+    today_bm = today_data.get("bm", 0)
+    today_cm = today_data.get("cm", 0)
+    today_total = today_dr + today_bm + today_cm
+
+    # Yesterday for comparison
+    yesterday = sorted_dates[-2] if len(sorted_dates) >= 2 else None
+    yest_data = days.get(yesterday, {}) if yesterday else {}
+    yest_total = yest_data.get("dr", 0) + yest_data.get("bm", 0) + yest_data.get("cm", 0)
+
+    # Trend arrow
+    if today_total > yest_total * 1.2:
+        trend = "📈 рост"
+    elif today_total < yest_total * 0.8:
+        trend = "📉 снижение"
+    else:
+        trend = "➡️ стабильно"
+
+    # 7-day average
+    last_7 = sorted_dates[-7:] if len(sorted_dates) >= 7 else sorted_dates
+    avg_7 = sum(
+        days[d].get("dr", 0) + days[d].get("bm", 0) + days[d].get("cm", 0)
+        for d in last_7
+    ) / len(last_7)
+
+    # Intercept rate
+    intercept_pct = "~97%" if total > 0 else "N/A"
+    launches_per_death = round(total / killed) if killed > 0 else "N/A"
+
+    lines = [
+        f"📊 *Отчёт ПВО ОАЭ — День {num_days}*",
+        f"Данные на: {last_date}",
+        "",
+        f"*Сегодня:* {today_total} запусков ({trend})",
+        f"  Дроны: {today_dr} | Баллист.: {today_bm} | Крылатые: {today_cm}",
+        "",
+        f"*Всего за конфликт:*",
+        f"  Запусков: {total:,}".replace(",", " "),
+        f"  Дроны: {total_dr:,} | Баллист.: {total_bm:,} | Крылатые: {total_cm}".replace(",", " "),
+        f"  Перехват: {intercept_pct}",
+        "",
+        f"*Потери:*",
+        f"  Погибших: {killed} | Раненых: {injured}",
+        f"  Запусков на 1 гибель: {launches_per_death}",
+        "",
+        f"*Тренд (7 дней):* {avg_7:.0f} запусков/день",
+    ]
+
+    # Add top news if available
+    news_items = news_data.get("items", []) if news_data else []
+    if news_items:
+        lines.append("")
+        lines.append("*Ключевые новости:*")
+        for item in news_items[:5]:
+            summary = item.get("summary", "")
+            title = item.get("title", "")
+            text = summary if summary else title
+            if text:
+                lines.append(f"• {text}")
+
+    lines.append("")
+    lines.append(f"[Открыть дашборд]({WEBAPP_URL})")
+
+    return "\n".join(lines)
+
+
+async def generate_report():
+    """Fetch latest data and build report text."""
+    try:
+        daily_data = await asyncio.to_thread(fetch_json, DAILY_JSON_URL)
+    except Exception as e:
+        return f"Ошибка загрузки данных: {e}"
+
+    try:
+        news_data = await asyncio.to_thread(fetch_json, NEWS_JSON_URL)
+    except Exception:
+        news_data = None
+
+    return build_dashboard_report(daily_data, news_data)
+
+
+@dp.message(Command("report"))
+async def cmd_report(message: types.Message):
+    await message.answer("Собираю отчёт...")
+    report = await generate_report()
+    await message.answer(report, parse_mode="Markdown", reply_markup=dashboard_kb)
+
+
+async def daily_report_loop():
+    """Send dashboard report automatically every day at REPORT_HOUR_UTC."""
+    await asyncio.sleep(15)  # wait for bot to start
+    print(f"[report] daily report loop started, hour={REPORT_HOUR_UTC} UTC")
+    last_sent_date = None
+    while True:
+        now = datetime.now(timezone.utc)
+        today_str = now.strftime("%Y-%m-%d")
+        if now.hour >= REPORT_HOUR_UTC and last_sent_date != today_str and owner_chat_id:
+            try:
+                report = await generate_report()
+                await bot.send_message(
+                    owner_chat_id, report,
+                    parse_mode="Markdown", reply_markup=dashboard_kb
+                )
+                last_sent_date = today_str
+                print(f"[report] daily report sent for {today_str}")
+            except Exception as e:
+                print(f"[report] error: {e}")
+        await asyncio.sleep(300)  # check every 5 min
+
+
 @dp.message()
 async def any_message(message: types.Message):
     if not message.text:
@@ -297,8 +430,11 @@ async def main():
     await bot.set_my_commands([
         BotCommand(command="start", description="Start / restart the bot"),
         BotCommand(command="uae_dashboard", description="Live air defence dashboard"),
+        BotCommand(command="report", description="Dashboard situation report"),
+        BotCommand(command="crypto", description="Check crypto spreads now"),
     ])
     asyncio.create_task(crypto_alert_loop())
+    asyncio.create_task(daily_report_loop())
     await dp.start_polling(bot)
 
 
