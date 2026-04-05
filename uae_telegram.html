@@ -238,7 +238,7 @@ html,body{background:var(--bg);color:var(--txt);font-family:-apple-system,'SF Pr
   <div class="deadline">
     <div class="dl-top">
       <div class="dl-label" data-t="dl_label">⏳ Дедлайн Трампа</div>
-      <div><div class="dl-days">2</div><div class="dl-caption" data-t="dl_caption">дней до 6 апр</div></div>
+      <div><div class="dl-days">1</div><div class="dl-caption" data-t="dl_caption">дней до 6 апр</div></div>
     </div>
     <div class="dl-body" data-t-html="dl_body">Трамп отложил удары по энергетике Ирана до <b>6 апреля (воскресенье)</b>. США передали 15-пунктный план через Пакистан. Иран отрицает прямые переговоры, но передал свои условия (репарации + Ормуз). Если сделки не будет — новая эскалация и риск ответных ударов по ОАЭ.</div>
   </div>
@@ -282,8 +282,8 @@ html,body{background:var(--bg);color:var(--txt);font-family:-apple-system,'SF Pr
 
   <div class="news">
     <div class="ntag ta">🚢 Ситуация</div>
-    <div class="ntit">Iran’s willingness to escalate this high-stakes war is its greatest weapon - The Guardian</div>
-    <div class="nmeta">Sat, 21 Mar 2026 07:00:00 GMT · The Guardian</div>
+    <div class="ntit">US-Israel war on Iran: What’s happening on day 25 of attacks? - Al Jazeera</div>
+    <div class="nmeta">Tue, 24 Mar 2026 07:00:00 GMT · Al Jazeera</div>
   </div>
 
   <div class="news">
@@ -312,8 +312,8 @@ html,body{background:var(--bg);color:var(--txt);font-family:-apple-system,'SF Pr
 
   <div class="news">
     <div class="ntag ta">🏠 Быт и безопасность</div>
-    <div class="ntit">Middle East Travel, Immigration & Corporate Mobility: FAQs for Employers - Newland Chase</div>
-    <div class="nmeta">Fri, 20 Mar 2026 07:00:00 GMT · Newland Chase</div>
+    <div class="ntit">Middle East Conflict: Situational Updates and Implications for Global Mobility - Newland Chase</div>
+    <div class="nmeta">Thu, 02 Apr 2026 07:00:00 GMT · Newland Chase</div>
   </div>
 
   <div class="news">
@@ -329,13 +329,13 @@ if(window.Telegram&&window.Telegram.WebApp){
 }
 
 /* ── DATA ── */
-var DAYS=['28ф','1м','2м','3м','4м','5м','6м','7м','8м','9м','10м','11м','12м','13м','14м','15м','16м','17м','18м','19м','20м','21м','22м','23м','24м','25м','26м','27м','28м','29м','30м','31м','1апр','2апр','3апр','4апр*'];
-var DR=[209,311,148,123,129,100,109,100,113,100,35,39,26,27,33,6,21,45,27,15,26,8,25,16,17,9,11,9,37,42,27,36,35,26,47,56];
-var BM=[137,20,28,11,9,5,9,7,16,12,9,6,10,7,9,4,6,10,13,7,4,3,4,7,5,4,15,6,20,16,11,8,0,19,18,23];
-var CM=[0,2,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,19,0,4,0];
+var DAYS=['28ф','1м','2м','3м','4м','5м','6м','7м','8м','9м','10м','11м','12м','13м','14м','15м','16м','17м','18м','19м','20м','21м','22м','23м','24м','25м','26м','27м','28м','29м','30м','31м','1апр','2апр','3апр','4апр','5апр*'];
+var DR=[209,311,148,123,129,100,109,100,113,100,35,39,26,27,33,6,21,45,27,15,26,8,25,16,17,9,11,9,37,42,27,36,35,26,47,56,36];
+var BM=[137,20,28,11,9,5,9,7,16,12,9,6,10,7,9,4,6,10,13,7,4,3,4,7,5,4,15,6,20,16,11,8,0,19,18,23,0];
+var CM=[0,2,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,19,0,4,0,0];
 var TOT=DR.map(function(d,i){return d+BM[i]+CM[i];});
-var CK=[1,1,3,3,3,3,3,3,4,4,6,6,6,6,6,6,6,8,8,8,8,8,8,8,9,9,11,11,11,11,11,11,11,11,12,13];
-var CI=[7,12,58,78,95,100,112,112,112,117,122,131,131,131,141,141,145,157,158,158,158,160,161,161,161,166,169,171,178,178,178,188,188,188,188,217];
+var CK=[1,1,3,3,3,3,3,3,4,4,6,6,6,6,6,6,6,8,8,8,8,8,8,8,9,9,11,11,11,11,11,11,11,11,12,13,13];
+var CI=[7,12,58,78,95,100,112,112,112,117,122,131,131,131,141,141,145,157,158,158,158,160,161,161,161,166,169,171,178,178,178,188,188,188,188,217,217];
 
 var tc='rgba(255,255,255,.42)';
 var gc='rgba(255,255,255,.07)';
@@ -577,7 +577,7 @@ new Chart(document.getElementById('c0'),{type:'bar',
 });
 
 // c1 — weekly
-var wL=['нед1','нед2','нед3','нед4','нед5','нед6 36'];
+var wL=['нед1','нед2','нед3','нед4','нед5','нед6 36–37'];
 var wD=[TOT.slice(0,7),TOT.slice(7,14),TOT.slice(14,21),TOT.slice(21,28),TOT.slice(28,32)].map(function(a){return a.reduce(function(s,v){return s+v;},0);});
 new Chart(document.getElementById('c1'),{type:'bar',
   data:{labels:wL,datasets:[{data:wD,backgroundColor:[R,A,B,G,A+'99'],borderRadius:5}]},
@@ -612,7 +612,7 @@ var ch3=new Chart(document.getElementById('c3'),{type:'bar',
 // c4 — launches per killed
 var ch4=new Chart(document.getElementById('c4'),{type:'bar',
   data:{labels:['ОАЭ','Москва','Киев','Украина','Россия'],
-    datasets:[{data:[206,50,44,26.7,9.3],backgroundColor:[G,G+'88',A,R+'88',A+'88'],borderRadius:4}]},
+    datasets:[{data:[209,50,44,26.7,9.3],backgroundColor:[G,G+'88',A,R+'88',A+'88'],borderRadius:4}]},
   options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.raw+' запусков/погибший';}}}},
     scales:{x:{ticks:{color:tc,font:{size:10}},grid:{color:gc},border:{color:'transparent'}},y:yax()}}
 });
