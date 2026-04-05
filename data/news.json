@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-05T17:53:00.228857Z",
+  "updated": "2026-04-05T19:51:54.387048Z",
   "items": [
     {
       "category": "school",
@@ -7,17 +7,17 @@
       "source": "Gulf News",
       "link": "https://news.google.com/rss/articles/CBMizAFBVV95cUxNUUFfckhjUDMyNEp0WHdrS3d2dGo4bGpXWDN3c2l0bVJEcGlISnhERUFQMUl6aDczUmNGZmxLUnZyenRUVjRjZ2x4aVg3c0EyWkZ2dDFHUm9vTHYyaTlyVW1OQ2VkU2lsc2o0TkY3MUVkejdXeU1uUDFzcWdVRzIxQjhqUkRINm9IUVNYQnloTWVId3pLYl9ZbFQtelBTRzVPcmMtTlptejlCdWRBdnBXZmdVSnU5MDdwb3RleTJweWhkdU1DQ0NWMnp4SnTSAd8BQVVfeXFMUG41aFZiQnNCQklNZnR5dnlJQjhvdmZXV2Q0ZUZpWVNFekhpank3eEl2bTJpWlJtbnFzenRPVEl1WU1MLVdXQktVVG40eEJSamhmSG9QSGR5UGNoaEdQMy1SWjVRYUJpVDdDUXFzdjdHWVhTMG1ZQ0VhcDR0RVVjQnNPVzI5bmRxRm00aC1ZVlAxZnJxVGRSYTRUR3hNOS1BdC1fUjdWal9MNzRkdXA0V3lzM1ZFNG90QUV2MWdQcXZKa0NhU295V0Y1RVo2MzBTMXdpWGJvYUR5amswaFNUUQ?oc=5",
       "date": "Thu, 02 Apr 2026 02:00:00 GMT",
-      "summary": "Школы в ОАЭ продолжают дистанционное обучение. Экзамены International Baccalaureate отменены.",
-      "analysis": "Образование переходит в онлайн-формат на неопределённый срок из-за безопасности учащихся."
+      "summary": "Школы в ОАЭ продолжают дистанционное обучение. Студентам дано время на адаптацию к новому формату занятий.",
+      "analysis": "Образовательные учреждения остаются закрыты для очного обучения из соображений безопасности на неопределённый срок."
     },
     {
       "category": "school",
-      "title": "UAE announces early spring break: Here’s when students get time off - gulfbusiness.com",
-      "source": "gulfbusiness.com",
+      "title": "UAE announces early spring break: Here’s when students get time off - Gulf Business",
+      "source": "Gulf Business",
       "link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxQQnJxTW1SNkttQjc2dDVrWXNLYlNUaVhCNjYzRFRiSzhPYmxtOVoyUjZzVGpjdlpjcUNXaEh0Q2J3SDRrTlVxcU56VFRrLVRWMVEwRXpMcGJQTnFSZzM1RW5YYTVtcEFZYmUyZm5rT1B3SkJQemJKdmdKYml1UXlUTHh3RS03VWd2NTh3MlVuaUJjbVlZ?oc=5",
       "date": "Wed, 01 Apr 2026 13:53:02 GMT",
-      "summary": "Объявлены дополнительные каникулы для школьников и студентов.",
-      "analysis": "Правительство даёт семьям время на адаптацию к новой ситуации и укрытие дома."
+      "summary": "Объявлены досрочные весенние каникулы для студентов. Это время можно провести с семьёй дома.",
+      "analysis": "Властями предпринимаются меры для минимизации пребывания детей в общественных местах во время конфликта."
     },
     {
       "category": "economy",
@@ -25,8 +25,8 @@
       "source": "The Guardian",
       "link": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxPRVNkS3Uxamk5cy1yR2NIRGNiUDUtU3NwaFlDUXZsLWtuSVgzUEJyeWF6WXNvZm94YlVwZkQzTmI5LVN1S1MweEVXZ0pIT0pwUWRGU2xfRGVoZWxNVVBYaW55cV9FZTFROEFXTzhTWEpjR05oWjZyaW93bUpmSFcwelAxcEJha0JBYm9qOGU4N3dhV0dWb29zWnE1LW5nV1VLNEw3S0hVLUg1a1RvRkxnaGE1Tmx3MEZ3?oc=5",
       "date": "Sun, 22 Mar 2026 07:00:00 GMT",
-      "summary": "Длительный конфликт может нарушить глобальную экономику и цены на товары.",
-      "analysis": "Мировые рынки реагируют на риск закрытия Ормузского пролива и перебоев в торговле."
+      "summary": "Долгий конфликт может привести к проблемам в мировой экономике, включая цены на товары и нефть.",
+      "analysis": "Экономические последствия конфликта затронут не только регион, но и мировые рынки и стоимость жизни."
     },
     {
       "category": "economy",
@@ -34,26 +34,8 @@
       "source": "Gulf News",
       "link": "https://news.google.com/rss/articles/CBMixwFBVV95cUxOenhJeTE1cW5OZFJKR25NcjY0OTRMNU50TlZQa1VLY0JYdlpTeWxKTWJSVjVVQlJqMVFLZzhCaGROVjJEd1BHcTc5YnYxd2JPcHRmSzc0ZG5DblFjY1dycXpGSGtTaFFTdEZFWWFTbnBKa2hrSWtud3BiSTQ2Rm95NlY2WU9sNHRSbUJuRlBLX1pmbE1URGo4RW02NHF0Z2JYNHFVX0RCckx0Y0duNXN2Ymk3NmlMdGdHVGJiQmN2X0dUODBmUkMw0gHaAUFVX3lxTFAxNmp4N25uTDdfMG1TMk1IN04xbzFJdUVBSGl6cXdFZnk1cGhuZFhkaEZINnFmbU5PRFNsWFdHZkVtWklEUXM1aW0xVmxNSkY5d3kydnFKbi1xRW9yVTZ4N2xiZHdvZ1ZmT1RRcnQxUkQ0WmhMajU2Rk1NemdPcXdrTzlDdG9ZOEJpandFdHp6QWRaMW5Yd2VQc0JtTVNWRXN5RndlZzliTUgyV3haYTlmM3hFR3NiOFduOWlxZGxVdVBzMkZDa0NRaTFxOVBlTmpBamd3Q0pjRTlR?oc=5",
       "date": "Wed, 01 Apr 2026 14:13:51 GMT",
-      "summary": "Иран блокирует нефтяные потоки через Ормуз, что влияет на экспорт и цены.",
-      "analysis": "Энергетический кризис может привести к росту стоимости электричества и топлива в ОАЭ."
-    },
-    {
-      "category": "tactics",
-      "title": "Iran War Maps: Tracking the Mideast Conflict - nytimes.com",
-      "source": "nytimes.com",
-      "link": "https://news.google.com/rss/articles/CBMidEFVX3lxTE1uUWpBOUw3b05zUlRrZFVqbThvSTc1elBsdzItdm4tR0M0eUYzSWN1Qm45RGp0R0pLbzJLekxiZ3JBODRlSjB5T2hIMThDVG12NG1zcnVKYzJNYnhqdFE0MVUtcU5VUWR1UkJ6dWthdVRvcW5t?oc=5",
-      "date": "Fri, 03 Apr 2026 07:00:00 GMT",
-      "summary": "Карты боевых действий показывают текущую ситуацию на Ближнем Востоке.",
-      "analysis": "Информация для понимания масштаба и географии конфликта на местности."
-    },
-    {
-      "category": "tactics",
-      "title": "Iran’s willingness to escalate this high-stakes war is its greatest weapon - The Guardian",
-      "source": "The Guardian",
-      "link": "https://news.google.com/rss/articles/CBMikgFBVV95cUxON3dvMnMzeWdnMDNFWTdUR19wME4yQUIyQk1tdTc5MDh6T0ZPS2lCOGhTelg3ZXdqelZKTUhZeWEtcF96ZTZPM0l6allHaHBFbTNTX0p0eXhSOEdRbkVmWE9nbmoyUXZ6ejdscEdVSFlrM2ZaeUg4TDZZVUJRbXM2ZHRWckJrUmwyeU1mSFFWWHlIZw?oc=5",
-      "date": "Sat, 21 Mar 2026 07:00:00 GMT",
-      "summary": "Иран готов ещё больше обострить конфликт, что повышает риски.",
-      "analysis": "Стратегическая угроза требует повышения личной бдительности и следования инструкциям властей."
+      "summary": "ОАЭ заявляет, что блокада нефтяных потоков в Ормузском проливе является экономическим давлением на весь мир.",
+      "analysis": "Международные торговые пути нарушены, что влияет на глобальные цены и поставки товаров."
     },
     {
       "category": "visa",
@@ -61,17 +43,8 @@
       "source": "Fragomen",
       "link": "https://news.google.com/rss/articles/CBMie0FVX3lxTE80UnB1R0JGS05lRXlqSTlJVEIzZnhwc3AxWTlwaU8yVERVM0UzV2s0WTRlVnVTLXVUazVfdHB1Yi1UWS1TZloyTWVFSFJxaTl4bXQ0S3RwX3VpMXBEU0xydlpYOUN3YW5wbHV4dHE5NkExZm9IN1ZrZTJfdw?oc=5",
       "date": "Wed, 01 Apr 2026 07:00:00 GMT",
-      "summary": "Изменены минимальные зарплаты для рабочих виз в ОАЭ.",
-      "analysis": "Мигранты должны проверить новые требования для продления и получения виз."
-    },
-    {
-      "category": "visa",
-      "title": "Emergency Grace Period for Expired UAE Residence Permits Ends; Standard Entry Rules Reinstated - Newland Chase",
-      "source": "Newland Chase",
-      "link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxOOWZIWF9IRWJiVGJrQzZKbnpTdlFKZC1TSlBzVUM3RjA2RjI1YXFXc0MxWElCLWtXb3JPSXZUWGc4SXJEOFBRdl9QZlZadGllM3FubVVzYUlFUWNHZWcxNFlORnpjcm05TnNiUE9RWFNMNWE5Y3FaMGxpOU9UVGtoblVxYnZ4UlhOWFlRYVV2NllhZG13NFlEbzNVV0tHRVJuV09HaVRUZTlsZDB1STBSRWN2NjJjd2lrVFpn?oc=5",
-      "date": "Wed, 01 Apr 2026 14:59:59 GMT",
-      "summary": "Льготный период для истёкших разрешений на проживание завершён; действуют обычные правила.",
-      "analysis": "Те, у кого закончилась виза, должны немедленно подать документы на продление или рискуют штрафами."
+      "summary": "Условия въезда и работы в ОАЭ могут измениться. Следите за официальными объявлениями о новых требованиях к зарплате для виз.",
+      "analysis": "Трудовые условия и иммиграционная политика могут быть пересмотрены в ходе конфликта."
     },
     {
       "category": "aviation",
@@ -79,8 +52,8 @@
       "source": "TravelPirates",
       "link": "https://news.google.com/rss/articles/CBMirAFBVV95cUxQb3BjZ3doX1U3bmgxa3ZtdTZGSnNWRXNPNTJQd1dZazJUMlROVHVyVFVRbjlIamx2MnJmeXdSSVMtenVLU19hV0o1NmxvN21KNm5SaFpXNXQwTllhU0RHal9RX3FnODRBVDhEbEFGMmItTjduaHZhc21YRmNGRktQdXNNNHlkMmNkTzhmZkJxbzlrSVd5WFE2Z0doUWtuY3gzUVBWTGlaWUoxMFlr?oc=5",
       "date": "Fri, 03 Apr 2026 10:13:42 GMT",
-      "summary": "Аэропорт Дубая работает, но с изменениями в расписании из-за конфликта.",
-      "analysis": "Путешествия остаются возможны, но нужно проверять статус рейсов перед поездкой в аэропорт."
+      "summary": "Аэропорт Дубая работает, но некоторые рейсы могут быть отменены из-за ситуации в регионе.",
+      "analysis": "Авиасообщение остаётся ограниченным; при планировании поездок проверяйте статус рейсов заранее."
     },
     {
       "category": "aviation",
@@ -88,26 +61,17 @@
       "source": "Reuters",
       "link": "https://news.google.com/rss/articles/CBMitgFBVV95cUxPb25kMGpxM2FDMGJfb1hTMVRpOW9CRWVIVW1IZ1NvVmtpakFSQ3NNaGNTZG9rOW1FbXF0WE1odUxVbzJKWTl3dVZnankxT0NVMU14dndRSzJIR0dqdnhrbHJJRUt0QmE2Z2ttNnIwUnY3NGVoSjZOeHFTQjREUnQxVXZmY2tIa0taR3JkekxWdXh0Ym55WVRUbThnY1gzS2YyRGhMV3NweDRYX0lSakkwRzBNbHpiUQ?oc=5",
       "date": "Thu, 02 Apr 2026 07:00:00 GMT",
-      "summary": "Авиакомпании отменяют больше рейсов по причине военного конфликта.",
-      "analysis": "Запланированные полёты могут быть отменены; нужно держать связь с авиалиниями и готовиться к задержкам."
+      "summary": "Авиакомпании отменяют больше рейсов из-за эскалации конфликта на Ближнем Востоке.",
+      "analysis": "Пути эвакуации и путешествий становятся менее доступными; международное сообщение сокращается."
     },
     {
       "category": "daily",
-      "title": "Middle East Conflict: Situational Updates and Implications for Global Mobility - Newland Chase",
-      "source": "Newland Chase",
-      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTFBnZEN5U3QxTHpnZUV0RVA1dFpHUzMyM05BTEREOUc0LXppakp6YVdTRnZzU1VFbWdVVGFKbXA5MWhnVDV4ZFVvQkRSOUMtT2pLY3NQdHliYlRJM1EtTGVJM090X0MyWmtHdWNFUUNR?oc=5",
-      "date": "Thu, 02 Apr 2026 07:00:00 GMT",
-      "summary": "Правительства обновляют инструкции по мобильности и передвижению граждан и резидентов.",
-      "analysis": "Семьи должны следить за официальными рекомендациями о безопасных маршрутах и времени нахождения дома."
-    },
-    {
-      "category": "daily",
-      "title": "Safety Guidance: Shelter in Place and Movement Restrictions in the GCC - Wego Travel Blog",
-      "source": "Wego Travel Blog",
-      "link": "https://news.google.com/rss/articles/CBMia0FVX3lxTE1ONU5kU3NGaW5yTFhSWVN2d2JfRXlaeGl2RDdLUm5mQi1yVlpKOG9xaXVmdF81QUpDeUhfRUpUNW8wUFFITWdhQnVaT0dnek9McXlmTWVmYjBuSFRNZWdXcXYySVp3dTBFbTIw?oc=5",
-      "date": "Wed, 01 Apr 2026 07:00:00 GMT",
-      "summary": "Рекомендации по укрытию дома и ограничению движения в опасные часы.",
-      "analysis": "Семьи должны подготовить запасы, знать убежища и следовать сиренам и объявлениям властей."
+      "title": "Updated Precautionary Measures Across the Gulf: What to Do in Case of Danger, Emergency Hotlines and Safety Shelters - AD Middle East",
+      "source": "AD Middle East",
+      "link": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxQbm44XzRyNjZiTWswQWdBLW5fRFY5Z1ZzVkNibjVVSzlnTTY0S2prRFhyMHk3cGpLOE4tZGJYT2FPdFdleWd1WFg0b3IzdUM2RTlpVjVPMTlHUFlpMWF5VE1WbnJCb2VyQjBYTkg0NTRUcDNQV3lLZFNJWjE5a0J5RjJmSTVaVGZQbU1FRzhoT2Q1ZHg1dXJDWUJEcTBnMURfQ2VWNWxoUVlPR2dYY29ETlRHVmI4WjMtQ1hDR0RQZy1nRmduRVI2ZFZ3VjV3WmVqWUZSSjdEOHo?oc=5",
+      "date": "Thu, 05 Mar 2026 08:00:00 GMT",
+      "summary": "Знайте номера служб экстренной помощи, места убежищ и правила поведения при опасности. Эта информация должна быть известна всей семье.",
+      "analysis": "Семьи должны быть подготовлены к чрезвычайным ситуациям и знать процедуры безопасности в своём районе."
     }
   ]
 }
