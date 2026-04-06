@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-06T10:42:32.211660Z",
+  "updated": "2026-04-06T14:32:52.044469Z",
   "items": [
     {
       "category": "school",
@@ -8,7 +8,7 @@
       "link": "https://news.google.com/rss/articles/CBMizAFBVV95cUxNUUFfckhjUDMyNEp0WHdrS3d2dGo4bGpXWDN3c2l0bVJEcGlISnhERUFQMUl6aDczUmNGZmxLUnZyenRUVjRjZ2x4aVg3c0EyWkZ2dDFHUm9vTHYyaTlyVW1OQ2VkU2lsc2o0TkY3MUVkejdXeU1uUDFzcWdVRzIxQjhqUkRINm9IUVNYQnloTWVId3pLYl9ZbFQtelBTRzVPcmMtTlptejlCdWRBdnBXZmdVSnU5MDdwb3RleTJweWhkdU1DQ0NWMnp4SnTSAd8BQVVfeXFMUG41aFZiQnNCQklNZnR5dnlJQjhvdmZXV2Q0ZUZpWVNFekhpank3eEl2bTJpWlJtbnFzenRPVEl1WU1MLVdXQktVVG40eEJSamhmSG9QSGR5UGNoaEdQMy1SWjVRYUJpVDdDUXFzdjdHWVhTMG1ZQ0VhcDR0RVVjQnNPVzI5bmRxRm00aC1ZVlAxZnJxVGRSYTRUR3hNOS1BdC1fUjdWal9MNzRkdXA0V3lzM1ZFNG90QUV2MWdQcXZKa0NhU295V0Y1RVo2MzBTMXdpWGJvYUR5amswaFNUUQ?oc=5",
       "date": "Thu, 02 Apr 2026 02:00:00 GMT",
       "summary": "Школы в ОАЭ продолжают дистанционное обучение. Студенты учатся онлайн из дома.",
-      "analysis": "Образовательные учреждения остаются закрыты для очного обучения до стабилизации ситуации."
+      "analysis": "Образовательные учреждения остаются закрыты для очного посещения в целях безопасности."
     },
     {
       "category": "school",
@@ -16,17 +16,17 @@
       "source": "Gulf Business",
       "link": "https://news.google.com/rss/articles/CBMilAFBVV95cUxQQnJxTW1SNkttQjc2dDVrWXNLYlNUaVhCNjYzRFRiSzhPYmxtOVoyUjZzVGpjdlpjcUNXaEh0Q2J3SDRrTlVxcU56VFRrLVRWMVEwRXpMcGJQTnFSZzM1RW5YYTVtcEFZYmUyZm5rT1B3SkJQemJKdmdKYml1UXlUTHh3RS03VWd2NTh3MlVuaUJjbVlZ?oc=5",
       "date": "Wed, 01 Apr 2026 13:53:03 GMT",
-      "summary": "В ОАЭ объявлены ранние весенние каникулы для студентов. Дети получат дополнительный отдых на дом.",
-      "analysis": "Это решение помогает семьям адаптироваться к текущей ситуации и снижает нагрузку на инфраструктуру."
+      "summary": "Школы объявили досрочные весенние каникулы. Уточните даты в вашей школе.",
+      "analysis": "Учебные заведения перестраивают расписание в условиях конфликта."
     },
     {
       "category": "economy",
-      "title": "‘The stakes are enormous’: how a prolonged Iran war could shock the global economy - theguardian.com",
-      "source": "theguardian.com",
+      "title": "‘The stakes are enormous’: how a prolonged Iran war could shock the global economy - The Guardian",
+      "source": "The Guardian",
       "link": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxPRVNkS3Uxamk5cy1yR2NIRGNiUDUtU3NwaFlDUXZsLWtuSVgzUEJyeWF6WXNvZm94YlVwZkQzTmI5LVN1S1MweEVXZ0pIT0pwUWRGU2xfRGVoZWxNVVBYaW55cV9FZTFROEFXTzhTWEpjR05oWjZyaW93bUpmSFcwelAxcEJha0JBYm9qOGU4N3dhV0dWb29zWnE1LW5nV1VLNEw3S0hVLUg1a1RvRkxnaGE1Tmx3MEZ3?oc=5",
       "date": "Sun, 22 Mar 2026 07:00:00 GMT",
-      "summary": "Длительная война с Ираном может серьёзно повлиять на мировую экономику и торговлю.",
-      "analysis": "Глобальные цены на товары и энергию могут вырасти, что затронет стоимость жизни в ОАЭ."
+      "summary": "Экономисты предупреждают, что длительный конфликт может повлиять на мировую экономику и цены на товары.",
+      "analysis": "Глобальная экономическая нестабильность может отразиться на стоимости импортных товаров и услуг."
     },
     {
       "category": "economy",
@@ -34,8 +34,8 @@
       "source": "Gulf News",
       "link": "https://news.google.com/rss/articles/CBMixwFBVV95cUxOenhJeTE1cW5OZFJKR25NcjY0OTRMNU50TlZQa1VLY0JYdlpTeWxKTWJSVjVVQlJqMVFLZzhCaGROVjJEd1BHcTc5YnYxd2JPcHRmSzc0ZG5DblFjY1dycXpGSGtTaFFTdEZFWWFTbnBKa2hrSWtud3BiSTQ2Rm95NlY2WU9sNHRSbUJuRlBLX1pmbE1URGo4RW02NHF0Z2JYNHFVX0RCckx0Y0duNXN2Ymk3NmlMdGdHVGJiQmN2X0dUODBmUkMw0gHaAUFVX3lxTFAxNmp4N25uTDdfMG1TMk1IN04xbzFJdUVBSGl6cXdFZnk1cGhuZFhkaEZINnFmbU5PRFNsWFdHZkVtWklEUXM1aW0xVmxNSkY5d3kydnFKbi1xRW9yVTZ4N2xiZHdvZ1ZmT1RRcnQxUkQ0WmhMajU2Rk1NemdPcXdrTzlDdG9ZOEJpandFdHp6QWRaMW5Yd2VQc0JtTVNWRXN5RndlZzliTUgyV3haYTlmM3hFR3NiOFduOWlxZGxVdVBzMkZDa0NRaTFxOVBlTmpBamd3Q0pjRTlR?oc=5",
       "date": "Wed, 01 Apr 2026 14:13:51 GMT",
-      "summary": "Иран перекрыл поток нефти через Ормузский пролив. Это угрожает мировым поставкам энергии.",
-      "analysis": "Блокировка ключевого торгового пути создаёт экономическое давление на регион и мировой рынок."
+      "summary": "ОАЭ говорит, что блокировка поставок нефти через Ормузский пролив — это экономическое давление на весь мир.",
+      "analysis": "Перекрытие нефтяных маршрутов создаёт давление на мировые рынки энергии и цены."
     },
     {
       "category": "tactics",
@@ -43,17 +43,8 @@
       "source": "The New York Times",
       "link": "https://news.google.com/rss/articles/CBMifkFVX3lxTE82Ym5OTm4waTQ1akFtS2dJbkszSnp4WXhIMUthZ3VEOTJoYlRZdHJvUFdDd3U2X1JmYmFvblZ5dXZhNDBpaUFqWHl6bWZWLWlFYnFPUEphY1ZrbF9zZVc0V2tlVU9NN2w0N0pqaUl3c0Q2UlRpa0VsNW5NZktOZw?oc=5",
       "date": "Fri, 03 Apr 2026 07:00:00 GMT",
-      "summary": "Иран продолжает наносить удары в ответ на действия США. Боевые операции интенсифицируются.",
-      "analysis": "Эскалация означает, что конфликт может длиться дольше, чем первоначально ожидалось."
-    },
-    {
-      "category": "tactics",
-      "title": "Implications of the Iran War for U.S.-Saudi Relations - newlinesinstitute.org",
-      "source": "newlinesinstitute.org",
-      "link": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOYUVLcVR6ZzQxak5tSk5WX3JoVkVpMFQ4VXRwNkJTa2dsTnAtVlhJdjNGbFNtM09IcTVDajNFd3RWVUFsa01GckhZenZFSXJndlFMbElEMDJxcDdnYmNrVWhmZFVia1Q0Z1BZQi10UmFkRnF3c1ZDMlVlMk9RUFg1RVVJVFdkQmdRVEpVU2U2LWZOeFg5TmhRNldiYXY5ektqeWJOSA?oc=5",
-      "date": "Wed, 01 Apr 2026 16:18:52 GMT",
-      "summary": "Война с Ираном влияет на отношения между США и Саудовской Аравией.",
-      "analysis": "Региональные альянсы и дипломатические отношения переформатируются под давлением конфликта."
+      "summary": "Иран увеличивает боевые удары. США готовятся к длительному конфликту.",
+      "analysis": "Эскалация боевых действий указывает на продолжение противостояния без близкого разрешения."
     },
     {
       "category": "visa",
@@ -61,8 +52,8 @@
       "source": "Fragomen",
       "link": "https://news.google.com/rss/articles/CBMie0FVX3lxTE80UnB1R0JGS05lRXlqSTlJVEIzZnhwc3AxWTlwaU8yVERVM0UzV2s0WTRlVnVTLXVUazVfdHB1Yi1UWS1TZloyTWVFSFJxaTl4bXQ0S3RwX3VpMXBEU0xydlpYOUN3YW5wbHV4dHE5NkExZm9IN1ZrZTJfdw?oc=5",
       "date": "Wed, 01 Apr 2026 07:00:00 GMT",
-      "summary": "В ОАЭ изменены минимальные зарплаты для спонсорства виз.",
-      "analysis": "Это может повлиять на иностранных работников при оформлении или продлении виз."
+      "summary": "Объявлены изменения в требованиях по минимальному заработку для виз. Проверьте новые условия у вашего работодателя.",
+      "analysis": "Визовые требования изменились; работодатели должны убедиться в соответствии новым стандартам оплаты труда."
     },
     {
       "category": "visa",
@@ -70,8 +61,8 @@
       "source": "Newland Chase",
       "link": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxOOWZIWF9IRWJiVGJrQzZKbnpTdlFKZC1TSlBzVUM3RjA2RjI1YXFXc0MxWElCLWtXb3JPSXZUWGc4SXJEOFBRdl9QZlZadGllM3FubVVzYUlFUWNHZWcxNFlORnpjcm05TnNiUE9RWFNMNWE5Y3FaMGxpOU9UVGtoblVxYnZ4UlhOWFlRYVV2NllhZG13NFlEbzNVV0tHRVJuV09HaVRUZTlsZDB1STBSRWN2NjJjd2lrVFpn?oc=5",
       "date": "Wed, 01 Apr 2026 14:59:59 GMT",
-      "summary": "Льготный период для просроченных виз в ОАЭ закончился. Теперь действуют обычные правила въезда.",
-      "analysis": "Люди с истёкшими разрешениями на пребывание должны срочно их восстановить или покинуть страну."
+      "summary": "Льготный период для истекших резидентских виз закончился. Теперь действуют обычные правила въезда.",
+      "analysis": "Семьи с истекшими разрешениями на проживание должны срочно оформить новые документы по стандартным процедурам."
     },
     {
       "category": "aviation",
@@ -79,17 +70,35 @@
       "source": "TravelPirates",
       "link": "https://news.google.com/rss/articles/CBMirAFBVV95cUxQb3BjZ3doX1U3bmgxa3ZtdTZGSnNWRXNPNTJQd1dZazJUMlROVHVyVFVRbjlIamx2MnJmeXdSSVMtenVLU19hV0o1NmxvN21KNm5SaFpXNXQwTllhU0RHal9RX3FnODRBVDhEbEFGMmItTjduaHZhc21YRmNGRktQdXNNNHlkMmNkTzhmZkJxbzlrSVd5WFE2Z0doUWtuY3gzUVBWTGlaWUoxMFlr?oc=5",
       "date": "Fri, 03 Apr 2026 10:13:42 GMT",
-      "summary": "Аэропорт Дубая работает с ограничениями на Пасхальных выходных.",
-      "analysis": "Авиаперелёты возможны, но рейсы могут быть задержаны или отменены."
+      "summary": "В аэропорту Дубая возможны задержки рейсов в выходные дни. Прибывайте заранее и проверяйте статус полёта.",
+      "analysis": "Авиаперевозки работают с ограничениями; пассажирам нужно следить за изменениями расписания."
     },
     {
       "category": "aviation",
-      "title": "Abu Dhabi International Airport Open Today With Limited Operations Amid Regional Recovery - ibtimes.com",
-      "source": "ibtimes.com",
-      "link": "https://news.google.com/rss/articles/CBMitwFBVV95cUxPUUlONWFTSFRsZk5IbE9VVkpwcFlLN0dVbGVuQk9wWlNHRmV5Wl9DWGg4Y05vUXlGNVdZZ0V2d3g4T1hxbG8wZ00yVFRMRGNRdDAyOERSVkM3c0JxQjJDZGlybmtYSkpFQzVWQWFCYk9oRS1qc2ZkbDZ3Yzl3N3VoYVNkNS13eGRyNVBYTHNOZjhjeGtwOWpUVnlKTlFEQWluUXJmRl9UUzJ3SnVhYm00MlJ2OGRLcEk?oc=5",
-      "date": "Sat, 04 Apr 2026 11:31:02 GMT",
-      "summary": "Аэропорт Абу-Даби работает с ограниченным числом рейсов по мере восстановления.",
-      "analysis": "Авиасообщение постепенно восстанавливается, но путешествия остаются затруднены."
+      "title": "Flight disrupted by airspace closure? Let’s figure out your next move - Skyscanner",
+      "source": "Skyscanner",
+      "link": "https://news.google.com/rss/articles/CBMirAFBVV95cUxQZFMtanRGNnJ1a1ZMNTEyU0Rxck8taW0zNElvQUpqVC1sNUIyYVBBOTczZzVZQ0EwT25VWmZ4dnlkS2VJRGJKRDlZb3A3ZVc3a3pBRVRrUTU3ZndtV01xX2FSUFJOVzd6RUtEM2RyT0VHb2VIRVN5elF2MV9RSHl6Qmpqdm9TVHB6ODhhYUFhR3lnRE1FczEyVFI2aFdXWTFYVzdrbEYzSDZRMUdP?oc=5",
+      "date": "Fri, 03 Apr 2026 07:38:00 GMT",
+      "summary": "Закрытие воздушного пространства может повлиять на полёты. Уточняйте маршруты и альтернативы перед бронированием.",
+      "analysis": "Ограничения в воздушном пространстве создают сложности с авиасообщением; некоторые маршруты могут быть недоступны."
+    },
+    {
+      "category": "daily",
+      "title": "Middle East Conflict: Situational Updates and Implications for Global Mobility - Newland Chase",
+      "source": "Newland Chase",
+      "link": "https://news.google.com/rss/articles/CBMibkFVX3lxTFBnZEN5U3QxTHpnZUV0RVA1dFpHUzMyM05BTEREOUc0LXppakp6YVdTRnZzU1VFbWdVVGFKbXA5MWhnVDV4ZFVvQkRSOUMtT2pLY3NQdHliYlRJM1EtTGVJM090X0MyWmtHdWNFUUNR?oc=5",
+      "date": "Thu, 02 Apr 2026 07:00:00 GMT",
+      "summary": "Обновлённая информация о последствиях конфликта для переездов и миграции семей из региона.",
+      "analysis": "Перемещение людей и рабочей силы затруднено из-за ограничений в транспорте и безопасности."
+    },
+    {
+      "category": "daily",
+      "title": "Middle East Travel, Immigration & Corporate Mobility: FAQs for Employers - Newland Chase",
+      "source": "Newland Chase",
+      "link": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE1TdzF3WXlFaEVHRTFqYWhBVFgxMGg4V0x6OVdvM0xOblVXbmZjaHZETnI5YjJNSUc0VldPLVFBbWFud3Y2SWtuamxzYVBJRmI0dzRTbXpfMkE?oc=5",
+      "date": "Fri, 20 Mar 2026 07:00:00 GMT",
+      "summary": "Рекомендации работодателям по переводам сотрудников и иммиграционным процедурам во время конфликта.",
+      "analysis": "Компании должны уточнить новые процедуры по управлению кадрами и переводам в условиях боевых действий."
     }
   ]
 }
