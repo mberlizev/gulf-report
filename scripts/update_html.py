@@ -158,9 +158,10 @@ def replace_stat_value(html, label_text, new_value, new_subtitle=None):
 
 def replace_badge(html, day_number):
     """Recipe Step 4: Update the day counter badge."""
-    pattern = r'(<div class="badge">)[^<]*(</div>)'
-    replacement = r'\g<1>' + 'День %d' % day_number + r'\2'
-    result = re.sub(pattern, replacement, html)
+    # Badge has structure: <div class="badge"><span data-t="badge">День</span> 33</div>
+    pattern = r'(<div class="badge">).*?(</div>)'
+    replacement = r'\g<1><span data-t="badge">День</span> %d\2' % day_number
+    result = re.sub(pattern, replacement, html, flags=re.DOTALL)
     log.info("Updated badge: Day %d", day_number)
     return result
 
@@ -533,6 +534,24 @@ def main():
     # Update launches per killed chart (c4)
     if killed > 0:
         html = update_c4_uae_value(html, launches_per_death)
+
+    # Update ss_days and ss_dayswar in all language packs
+    dw_en = "days" if num_days != 1 else "day"
+    replacements = {
+        r"ss_days:'(\d+)\s+\w+'": f"ss_days:'{num_days} %s'" % dw,
+        r"ss_days:'(\d+)\s+days'": f"ss_days:'{num_days} {dw_en}'",
+        r"ss_days:'(\d+)\s+يوم'": f"ss_days:'{num_days} يوم'",
+        r"ss_days:'(\d+)\s+jours'": f"ss_days:'{num_days} jours'",
+        r"ss_days:'(\d+)\s+giorni'": f"ss_days:'{num_days} giorni'",
+        r"ss_dayswar:'(\d+)\s+\w+\s+войны'": f"ss_dayswar:'{num_days} {dw} войны'",
+        r"ss_dayswar:'(\d+)\s+days\s+of\s+war'": f"ss_dayswar:'{num_days} {dw_en} of war'",
+        r"ss_dayswar:'(\d+)\s+يوم\s+حرب'": f"ss_dayswar:'{num_days} يوم حرب'",
+        r"ss_dayswar:'(\d+)\s+jours\s+de\s+guerre'": f"ss_dayswar:'{num_days} jours de guerre'",
+        r"ss_dayswar:'(\d+)\s+giorni\s+di\s+guerra'": f"ss_dayswar:'{num_days} giorni di guerra'",
+    }
+    for pattern, repl in replacements.items():
+        html = re.sub(pattern, repl, html)
+    log.info("Updated ss_days/ss_dayswar to %d in all languages", num_days)
 
     # Update weekly labels
     html = update_weekly_labels(html, num_days)
