@@ -618,6 +618,116 @@ Return ONLY valid JSON array (no markdown), same order as input:
     return raw_news
 
 
+def rashid_generate_trends(raw_news, daily_data):
+    """
+    Rashid generates the entire Trends tab content:
+    - deadline: current key political deadline/event (dynamic, not hardcoded)
+    - trend_summary: 2-3 paragraph analysis of current situation
+    - news: enriched news cards (already done by rashid_analyze_news)
+
+    Saves to data/trends.json
+    """
+    if not HAS_ANTHROPIC:
+        log.warning("anthropic not installed — skipping Rashid trends generation")
+        return None
+
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        log.warning("ANTHROPIC_API_KEY not set — skipping Rashid trends generation")
+        return None
+
+    sorted_dates = sorted(daily_data.keys())
+    last_date = sorted_dates[-1] if sorted_dates else "unknown"
+    last_day = daily_data.get(last_date, {})
+    total_days = len(sorted_dates)
+    total_launches = sum(
+        daily_data[d].get("dr", 0) + daily_data[d].get("bm", 0) + daily_data[d].get("cm", 0)
+        for d in sorted_dates
+    )
+
+    # Last 7 days trend
+    last_7 = sorted_dates[-7:] if len(sorted_dates) >= 7 else sorted_dates
+    daily_totals_7 = [
+        daily_data[d].get("dr", 0) + daily_data[d].get("bm", 0) + daily_data[d].get("cm", 0)
+        for d in last_7
+    ]
+    avg_7 = sum(daily_totals_7) / max(len(daily_totals_7), 1)
+
+    news_titles = "\n".join(
+        "- [%s] %s" % (n.get("category", ""), n.get("title", ""))
+        for n in raw_news[:10]
+    )
+
+    today_str = datetime.utcnow().strftime("%Y-%m-%d")
+
+    prompt = """You are Rashid, a calm data analyst writing for families living in UAE during the Iran-UAE conflict.
+
+TODAY: %s (Day %d)
+TOTAL LAUNCHES: %d (drones: %d, ballistic: %d, cruise: %d)
+CASUALTIES: %d killed, %d injured
+LAST 7 DAYS AVG: %.0f launches/day
+LAST DAY: DR=%d BM=%d CM=%d
+
+RECENT NEWS:
+%s
+
+Generate the Trends tab content in Russian. Return ONLY valid JSON (no markdown):
+
+{
+  "deadline_label": "short label for current key event/deadline (e.g. 'Дедлайн Трампа' or 'Переговоры в Дохе')",
+  "deadline_days": number of days until event (0 if passed or today, -1 if no clear deadline),
+  "deadline_caption": "short caption like 'дней до дедлайна' or 'дедлайн прошёл'",
+  "deadline_body": "2-3 sentences about the current key political/diplomatic event. What happened, what's expected. HTML ok: use <b> for emphasis.",
+  "trend_title": "Тренды · %s",
+  "trend_body": "3 short paragraphs separated by <br><br>. Paragraph 1: military trend (launches up/down, new tactics). Paragraph 2: daily life impact (schools, economy, flights). Paragraph 3: political outlook (negotiations, escalation risk). Use <b> for key facts. Be calm, factual, no panic.",
+  "categories_order": ["school", "economy", "tactics", "visa", "aviation", "daily"]
+}
+
+RULES:
+- Russian language
+- Calm, factual tone — for families, not analysts
+- Focus on practical impact
+- If April 6 Trump deadline passed — find the NEXT key event
+- Use real data from the numbers above
+- trend_body: each paragraph 2-3 sentences max""" % (
+        today_str, total_days, total_launches,
+        sum(daily_data[d].get("dr", 0) for d in sorted_dates),
+        sum(daily_data[d].get("bm", 0) for d in sorted_dates),
+        sum(daily_data[d].get("cm", 0) for d in sorted_dates),
+        last_day.get("ck", 0), last_day.get("ci", 0),
+        avg_7,
+        last_day.get("dr", 0), last_day.get("bm", 0), last_day.get("cm", 0),
+        news_titles, today_str
+    )
+
+    try:
+        client = anthropic.Anthropic(api_key=api_key)
+        response = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=1500,
+            messages=[{"role": "user", "content": prompt}]
+        )
+        text = response.content[0].text.strip()
+        if text.startswith("```"):
+            text = re.sub(r'^```(?:json)?\s*', '', text)
+            text = re.sub(r'\s*```$', '', text)
+        trends = json.loads(text)
+
+        # Save to trends.json
+        trends_file = REPO_ROOT / "data" / "trends.json"
+        with open(trends_file, "w", encoding="utf-8") as f:
+            json.dump({
+                "updated": datetime.utcnow().isoformat() + "Z",
+                "trends": trends,
+            }, f, ensure_ascii=False, indent=2)
+        log.info("Rashid trends: generated and saved to data/trends.json")
+        return trends
+
+    except Exception as e:
+        log.warning("Rashid trends generation failed: %s", e)
+        return None
+
+
 def extract_existing_from_html():
     """
     Extract current data arrays from HTML as authoritative baseline.
@@ -860,6 +970,9 @@ def main():
 
     # Step 7b: Rashid analyzes and simplifies news
     news_items = rashid_analyze_news(news_items, merged)
+
+    # Step 7c: Rashid generates full Trends tab content
+    rashid_generate_trends(news_items, merged)
 
     # Compute summary
     sorted_dates = sorted(merged.keys())
