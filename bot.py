@@ -427,11 +427,11 @@ async def any_message(message: types.Message):
 
 async def main():
     print("Bot started (local Claude mode for owner)")
+    # Public menu — visible to all users
     await bot.set_my_commands([
-        BotCommand(command="start", description="Start / restart the bot"),
+        BotCommand(command="start", description="Start the bot"),
         BotCommand(command="uae_dashboard", description="Live air defence dashboard"),
-        BotCommand(command="report", description="Dashboard situation report"),
-        BotCommand(command="crypto", description="Check crypto spreads now"),
+        BotCommand(command="report", description="Situation report"),
     ])
     asyncio.create_task(crypto_alert_loop())
     asyncio.create_task(daily_report_loop())
